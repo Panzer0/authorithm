@@ -1,7 +1,7 @@
 import praw, prawcore, json
 
 
-SUBREDDIT_NAME = "games"
+SUBREDDIT_NAME = "askreddit"
 POST_COUNT = 3
 HISTORY_LIMIT = 125
 COMMENT_QUOTA = 25
@@ -26,7 +26,6 @@ class RedditCollector:
         )
 
     def gather_from_user(self, user, limit=HISTORY_LIMIT, quota=COMMENT_QUOTA):
-        print(f"Checking {user.name}")
         self.checked_users.add(user.name)
 
         # Find all comments in adequate subreddit
@@ -37,13 +36,11 @@ class RedditCollector:
         ]
 
         # Add only if sufficient amount of comments has been found
-        print(f"{len(comments)}|{quota}")
         if len(comments) >= quota:
             self.dataset.append({"username": user.name, "comments": comments})
 
     def gather_comments_from_hot(self, post_limit=POST_COUNT):
-        for i, post in enumerate(self.subreddit.hot(limit=post_limit)):
-            print(f"{i + 1}/{post_limit}")
+        for post in self.subreddit.hot(limit=post_limit):
             post.comments.replace_more(limit=0)
             for comment in post.comments.list():
                 try:
@@ -53,6 +50,15 @@ class RedditCollector:
                     print(e)
                     break
 
+    def gather_comments_from_all(self, limit = COMMENT_LIMIT):
+        for comment in self.subreddit.comments(limit=limit):
+            try:
+                if self.is_valid_comment(comment):
+                    self.gather_from_user(comment.author)
+            except prawcore.exceptions.TooManyRequests as e:
+                print(e)
+                break
+
     def dump_dataset(self, path=DEFAULT_PATH):
         with open(path, "w") as file:
             json.dump(self.dataset, file, indent=2)
@@ -60,5 +66,5 @@ class RedditCollector:
 
 if __name__ == "__main__":
     collector = RedditCollector(SUBREDDIT_NAME, SITE_NAME, USER_AGENT)
-    collector.gather_comments_from_hot()
+    collector.gather_comments_from_all()
     collector.dump_dataset()
