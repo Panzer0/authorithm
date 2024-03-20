@@ -234,6 +234,5 @@ fabric.properties
 # API authentication information
 praw.ini
 
-# The obtained dataset
-dataset.json
-dataset_alt.json
+# The datasets obtained via RedditIntegration
+datasets/
