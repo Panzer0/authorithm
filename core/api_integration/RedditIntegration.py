@@ -1,21 +1,41 @@
-import praw
-
-USER_SEPARATOR = "#-" * 50
-COMMENT_SEPARATOR = "--" * 25
+import praw, json
 
 reddit = praw.Reddit("Authorithm", user_agent="authorithm by /u/pazur13")
-print(reddit.read_only)
 
-drafted_users = [post.author for post in reddit.subreddit("europe").hot(limit=10)]
+SUBREDDIT_NAME = "europe"
+subreddit = reddit.subreddit(SUBREDDIT_NAME)
+
+dataset = []
+checked_users = set()
 
 
+def is_valid_commet(comment):
+    return (
+        isinstance(comment, praw.models.Comment)
+        and comment.author
+        and not getattr(comment.author, "is_suspended", False)
+        and comment.author.name not in checked_users
+    )
 
-for user in drafted_users:
-    print(f"We've got {user.name}")
-    latest_comments = reddit.redditor(user.name).comments.new(limit=5)
-    print(f"{USER_SEPARATOR}\n"
-          f"For user {user}:")
-    print(latest_comments)
-    for comment in latest_comments:
-        print(COMMENT_SEPARATOR)
-        print(comment.body)
+
+for post in subreddit.hot(limit=5):
+    for comment in post.comments.list():
+        # As opposed to praw.models.MoreComments
+        if is_valid_commet(comment):
+            user = comment.author
+            # Find all comments in corresponding subreddit
+            checked_users.add(user.name)
+            user_comments = [
+                comment.body
+                for comment in user.comments.new(limit=200)
+                if comment.subreddit.display_name == SUBREDDIT_NAME
+            ]
+
+            # Filter out users with insufficient comment count
+            if len(user_comments) >= 25:
+                dataset.append(
+                    {"username": user.name, "comments": user_comments}
+                )
+
+with open("dataset.json", "w") as file:
+    json.dump(dataset, file, indent=2)
