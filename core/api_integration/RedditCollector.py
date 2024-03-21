@@ -1,4 +1,5 @@
 import praw, prawcore, json
+import pandas as pd
 
 
 SUBREDDIT_NAME = "askreddit"
@@ -7,39 +8,51 @@ HISTORY_LIMIT = 125
 COMMENT_QUOTA = 25
 SITE_NAME = "Authorithm"
 USER_AGENT = "authorithm by /u/pazur13"
-DEFAULT_PATH = f"datasets/dataset_{SUBREDDIT_NAME}.json"
-COMMENT_LIMIT = 500
+DEFAULT_PATH = f"datasets/dataset_{SUBREDDIT_NAME}.parquet.gzip"
+COMMENT_LIMIT = 250
 
 
 class RedditCollector:
-    def __init__(self, subreddit_name, site_name, agent) -> None:
+    def __init__(self, subreddit_name: str, site_name: str, agent: str) -> None:
         self.reddit = praw.Reddit(site_name, user_agent=agent)
         self.subreddit = self.reddit.subreddit(subreddit_name)
         self.dataset = []
         self.checked_users = set()
 
-    def is_valid_comment(self, comment) -> bool:
+    def is_valid_comment(self, comment: praw.models.Comment) -> bool:
         return (
             comment.author
             and comment.author.name not in self.checked_users
             and not getattr(comment.author, "is_suspended", False)
         )
 
-    def gather_from_user(self, user, limit=HISTORY_LIMIT, quota=COMMENT_QUOTA):
+    def gather_from_user(
+        self,
+        user: praw.models.Redditor,
+        limit: int = HISTORY_LIMIT,
+        quota: int = COMMENT_QUOTA,
+    ):
         self.checked_users.add(user.name)
 
         # Find all comments in adequate subreddit
         comments = [
-            comment.body
+            comment
             for comment in user.comments.new(limit=limit)
             if comment.subreddit == self.subreddit
         ]
 
         # Add only if sufficient amount of comments has been found
         if len(comments) >= quota:
-            self.dataset.append({"username": user.name, "comments": comments})
+            for comment in comments:
+                self.dataset.append(
+                    {
+                        "id": comment.id,
+                        "author": comment.author.name,
+                        "body": comment.body,
+                    }
+                )
 
-    def gather_comments_from_hot(self, post_limit=POST_COUNT):
+    def gather_comments_from_hot(self, post_limit: int = POST_COUNT):
         for post in self.subreddit.hot(limit=post_limit):
             post.comments.replace_more(limit=0)
             for comment in post.comments.list():
@@ -50,7 +63,7 @@ class RedditCollector:
                     print(e)
                     break
 
-    def gather_comments_from_all(self, limit = COMMENT_LIMIT):
+    def gather_comments_from_all(self, limit: int = COMMENT_LIMIT):
         for comment in self.subreddit.comments(limit=limit):
             try:
                 if self.is_valid_comment(comment):
@@ -59,9 +72,10 @@ class RedditCollector:
                 print(e)
                 break
 
-    def dump_dataset(self, path=DEFAULT_PATH):
-        with open(path, "w") as file:
-            json.dump(self.dataset, file, indent=2)
+    def dump_dataset(self, path: str = DEFAULT_PATH) -> None:
+        df = pd.DataFrame(self.dataset)
+        df.set_index("id", inplace=True)
+        df.to_parquet(path, compression="gzip")
 
 
 if __name__ == "__main__":

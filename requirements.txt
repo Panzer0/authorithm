@@ -1,10 +1,15 @@
 certifi==2024.2.2
 charset-normalizer==3.3.2
+cramjam==2.8.3
+fastparquet==2024.2.0
+fsspec==2024.3.1
 idna==3.6
 numpy==1.26.4
+packaging==24.0
 pandas==2.2.1
 praw==7.7.1
 prawcore==2.4.0
+pyarrow==15.0.2
 python-dateutil==2.9.0.post0
 pytz==2024.1
 requests==2.31.0
