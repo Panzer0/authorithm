@@ -1,15 +1,17 @@
-import praw, prawcore, json
+import praw, prawcore
 import pandas as pd
+from core.embedding.Embedder import Embedder
 
 
-SUBREDDIT_NAME = "askreddit"
-POST_COUNT = 3
-HISTORY_LIMIT = 125
+SUBREDDIT_NAME = "fantasy"
+DATASET_FILENAME = f"{SUBREDDIT_NAME}.parquet.gzip"
+DATASET_PATH = f"datasets/dataset_{DATASET_FILENAME}"
+POST_COUNT = 10
+HISTORY_LIMIT = 150
 COMMENT_QUOTA = 25
 SITE_NAME = "Authorithm"
 USER_AGENT = "authorithm by /u/pazur13"
-DEFAULT_PATH = f"datasets/dataset_{SUBREDDIT_NAME}.parquet.gzip"
-COMMENT_LIMIT = 250
+COMMENT_LIMIT = 1000
 
 
 class RedditCollector:
@@ -18,6 +20,7 @@ class RedditCollector:
         self.subreddit = self.reddit.subreddit(subreddit_name)
         self.dataset = []
         self.checked_users = set()
+        self.embedder = Embedder()
 
     def is_valid_comment(self, comment: praw.models.Comment) -> bool:
         return (
@@ -31,7 +34,7 @@ class RedditCollector:
         user: praw.models.Redditor,
         limit: int = HISTORY_LIMIT,
         quota: int = COMMENT_QUOTA,
-    ):
+    ) -> None:
         self.checked_users.add(user.name)
 
         # Find all comments in adequate subreddit
@@ -49,11 +52,13 @@ class RedditCollector:
                         "id": comment.id,
                         "author": comment.author.name,
                         "body": comment.body,
+                        "embedding": self.embedder.embed_str(comment.body),
                     }
                 )
 
-    def gather_comments_from_hot(self, post_limit: int = POST_COUNT):
-        for post in self.subreddit.hot(limit=post_limit):
+    def gather_comments_from_hot(self, post_limit: int = POST_COUNT) -> None:
+        for i, post in enumerate(self.subreddit.hot(limit=post_limit)):
+            print(f"{i}/{post_limit}")
             post.comments.replace_more(limit=0)
             for comment in post.comments.list():
                 try:
@@ -63,16 +68,17 @@ class RedditCollector:
                     print(e)
                     break
 
-    def gather_comments_from_all(self, limit: int = COMMENT_LIMIT):
-        for comment in self.subreddit.comments(limit=limit):
+    def gather_comments_from_all(self, limit: int = COMMENT_LIMIT) -> None:
+        for i, comment in enumerate(self.subreddit.comments(limit=limit)):
             try:
+                print(f"{i}/{limit}")
                 if self.is_valid_comment(comment):
                     self.gather_from_user(comment.author)
             except prawcore.exceptions.TooManyRequests as e:
-                print(e)
+                print(f"Exception caught: {e}")
                 break
 
-    def dump_dataset(self, path: str = DEFAULT_PATH) -> None:
+    def dump_dataset(self, path: str = DATASET_PATH) -> None:
         df = pd.DataFrame(self.dataset)
         df.set_index("id", inplace=True)
         df.to_parquet(path, compression="gzip")
