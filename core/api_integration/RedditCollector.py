@@ -65,7 +65,7 @@ class RedditCollector:
                     if self.is_valid_comment(comment):
                         self.gather_from_user(comment.author)
                 except prawcore.exceptions.TooManyRequests as e:
-                    print(e)
+                    print(f"Exception caught: {e}")
                     break
 
     def gather_comments_from_all(self, limit: int = COMMENT_LIMIT) -> None:
