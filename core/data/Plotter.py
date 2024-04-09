@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import seaborn as sns
+
 
 SUBREDDIT_NAME = "fantasy"
 DATASET_FILENAME = f"dataset_{SUBREDDIT_NAME}.parquet.gzip"
@@ -12,19 +14,18 @@ class Embedder:
     def __init__(self, data: pd.DataFrame) -> None:
         self.data = data
         np.random.seed(123456)
+        sns.set_theme()
 
     def plot_graph(self):
         author_counts = self.data["author"].value_counts()
-        bins  = list(np.arange(25, 150, 5)) + [150]
-        hist = author_counts.hist(edgecolor='white', bins = bins)
+        author_counts_df = pd.DataFrame({"value": author_counts.index, "count": author_counts.values})
+        sns.histplot(data=author_counts_df)
 
         plt.xlabel("Comment count")
         plt.ylabel("User count")
 
-        hist.set_xticks(bins)
-        hist.set_xticklabels(bins, rotation=45, ha='right')
-
         plt.show()
+
 
 
 if __name__ == "__main__":
