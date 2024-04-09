@@ -16,14 +16,26 @@ class Embedder:
         np.random.seed(123456)
         sns.set_theme()
 
-    def plot_graph(self):
+    def plot_hist(self):
         author_counts = self.data["author"].value_counts()
-        author_counts_df = pd.DataFrame({"value": author_counts.index, "count": author_counts.values})
-        sns.histplot(data=author_counts_df)
+        plt.figure(figsize=(8, 6))
+        sns.histplot(data=author_counts)
 
         plt.xlabel("Comment count")
         plt.ylabel("User count")
+        plt.title("Distribution of comment counts per author")
 
+        plt.show()
+
+    # Short for Cumulative Distribution Function
+    def plot_CDF(self):
+        author_counts = self.data["author"].value_counts()
+        plt.figure(figsize=(8, 6))
+        sns.ecdfplot(data=author_counts)
+
+        plt.xlabel("User's comment count threshold")
+        plt.ylabel("Cumulative proportion of comments")
+        plt.title("CDF of comments vs. comment count threshold")
         plt.show()
 
 
@@ -31,7 +43,7 @@ class Embedder:
 if __name__ == "__main__":
     dataset = pd.read_parquet(DATASET_PATH)
     embedder = Embedder(dataset)
-    embedder.plot_graph()
+    embedder.plot_CDF()
     # print(dataset)
     # print(author_counts.sum())
     # print(author_counts[author_counts > 50].sum())
