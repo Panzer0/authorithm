@@ -38,12 +38,32 @@ class Embedder:
         plt.title("CDF of comments vs. comment count threshold")
         plt.show()
 
+    def plot_threshold_sizes(self):
+        author_counts = self.data["author"].value_counts()
+        thresholds = [25, 50, 75, 100, 125, 150]  # Example thresholds
+        dataset_sizes = []
+
+        for threshold in thresholds:
+            size = sum(count for count in author_counts if count >= threshold)
+            dataset_sizes.append(size)
+
+        plt.figure(figsize=(8, 6))
+        ax = sns.barplot(x=thresholds, y=dataset_sizes)
+
+        for index, value in enumerate(dataset_sizes):
+            ax.text(index, value, f'{value}', ha='center')
+
+        plt.xlabel("Comment count threshold")
+        plt.ylabel("Dataset size (number of comments)")
+        plt.title("Dataset size vs. comment count threshold")
+        plt.show()
+
 
 
 if __name__ == "__main__":
     dataset = pd.read_parquet(DATASET_PATH)
     embedder = Embedder(dataset)
-    embedder.plot_CDF()
+    embedder.plot_threshold_sizes()
     # print(dataset)
     # print(author_counts.sum())
     # print(author_counts[author_counts > 50].sum())
