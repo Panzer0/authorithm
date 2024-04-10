@@ -85,8 +85,17 @@ class RedditCollector:
 
     def expand_dataset(
         self, comments: list[praw.models.Comment], quota: int = COMMENT_QUOTA
-    ):
-        # Add only if sufficient amount of comments has been found
+    ) -> None:
+        """Expands dataset by a list of comments.
+
+        Expands the dataset by a list of comments provided it meets the given
+        size quota. Each dataset entry consists of the comment's ID, its
+        author's name, its body and an embedding of its body.
+
+        Args:
+            comments: A list of comments to be appended to the dataset
+            quota: The minimal amount of comments for the expansion to occur.
+        """
         if len(comments) >= quota:
             for comment in comments:
                 self.dataset.append(
