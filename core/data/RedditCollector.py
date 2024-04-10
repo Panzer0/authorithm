@@ -93,7 +93,7 @@ class RedditCollector:
         author's name, its body and an embedding of its body.
 
         Args:
-            comments: A list of comments to be appended to the dataset
+            comments: A list of comments to be appended to the dataset.
             quota: The minimal amount of comments for the expansion to occur.
         """
         if len(comments) >= quota:
@@ -108,6 +108,15 @@ class RedditCollector:
                 )
 
     def gather_comments_from_hot(self, post_limit: int = POST_LIMIT) -> None:
+        """Gathers comments from hot posts and expands the dataset.
+
+        Gathers comments from users who have left comments on a given amount of
+        comments from the subreddit's "top" section. The dataset is expanded by
+        the gathered comments.
+
+        Args:
+            post_limit: The maximal amount of posts to be checked.
+        """
         for i, post in enumerate(self.subreddit.hot(limit=post_limit)):
             print(f"{i}/{post_limit}")
             post.comments.replace_more(limit=0)
