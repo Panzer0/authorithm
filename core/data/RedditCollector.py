@@ -60,21 +60,16 @@ class RedditCollector:
             and not getattr(comment.author, "is_suspended", False)
         )
 
-    def gather_from_user(
-        self,
-        user: praw.models.Redditor,
-        limit: int = HISTORY_LIMIT,
-    ):
+    def gather_from_user(self, user: praw.models.Redditor, limit: int = HISTORY_LIMIT) -> list[praw.models.Comment]:
         self.checked_users.add(user.name)
 
-        # Find all comments in adequate subreddit
         return [
             comment
             for comment in user.comments.new(limit=limit)
             if comment.subreddit == self.subreddit
         ]
 
-    def expand_dataset(self, comments, quota: int = COMMENT_QUOTA):
+    def expand_dataset(self, comments: list[praw.models.Comment], quota: int = COMMENT_QUOTA):
         # Add only if sufficient amount of comments has been found
         if len(comments) >= quota:
             for comment in comments:
@@ -94,7 +89,8 @@ class RedditCollector:
             for comment in post.comments.list():
                 try:
                     if self.is_valid_comment(comment):
-                        self.gather_from_user(comment.author)
+                        comments = self.gather_from_user(comment.author)
+                        self.expand_dataset(comments)
                 except prawcore.exceptions.TooManyRequests as e:
                     print(f"Exception caught: {e}")
                     break
@@ -104,7 +100,8 @@ class RedditCollector:
             try:
                 print(f"{i}/{limit}")
                 if self.is_valid_comment(comment):
-                    self.gather_from_user(comment.author)
+                    comments = self.gather_from_user(comment.author)
+                    self.expand_dataset(comments)
             except prawcore.exceptions.TooManyRequests as e:
                 print(f"Exception caught: {e}")
                 break
