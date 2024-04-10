@@ -27,6 +27,15 @@ COMMENT_QUOTA = 25
 
 class RedditCollector:
     def __init__(self, subreddit_name: str, site_name: str, agent: str) -> None:
+        """Inits RedditCollector.
+
+        Args:
+            subreddit_name: The name of the target subreddit
+            site_name: The name of the section in the praw.ini file from which
+             the settings are to be loaded. Due to private information therein,
+             praw.ini must be configured manually for each user of this program.
+            agent: App's unique identifier required by Reddit API's security
+        """
         self.reddit = praw.Reddit(site_name, user_agent=agent)
         self.subreddit = self.reddit.subreddit(subreddit_name)
         self.dataset = []
