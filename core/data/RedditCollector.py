@@ -45,11 +45,14 @@ class RedditCollector:
     def is_valid_comment(self, comment: praw.models.Comment) -> bool:
         """Validates a comment.
 
+        Validates whether the comment's author exists, has not been checked
+        before and remains unsuspended.
+
         Args:
             comment: The comment to be validated.
 
         Returns:
-            Truth value of whether the comment's author is valid for inspection
+            Truth value of whether the comment's author is valid for inspection.
         """
         return (
             comment.author
