@@ -26,6 +26,23 @@ COMMENT_QUOTA = 25
 
 
 class RedditCollector:
+    """Creates a dataset consisting of Reddit comments.
+
+    Creates a dataset consisting of Reddit comments from a given subreddit
+    gathered from the Reddit API through the PRAW library.
+
+    Attributes:
+        reddit: Instance of PRAW's Reddit class, which provides access to the
+         Reddit API.
+        subreddit: Instance of PRAW's Subreddit class, which provides
+         information about the target subreddit.
+        dataset: List of dicts iteratively expanded with comments from new
+         users. Meant for the eventual creation of a Pandas dataframe.
+        checked_users: Users which have already been considered for the dataset.
+        embedder: An instance of the Embedder class, responsible for embedding
+         comments for the dataset.
+
+    """
     def __init__(self, subreddit_name: str, site_name: str, agent: str) -> None:
         """Inits RedditCollector.
 
