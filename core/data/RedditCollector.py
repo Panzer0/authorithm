@@ -30,11 +30,11 @@ class RedditCollector:
         """Inits RedditCollector.
 
         Args:
-            subreddit_name: The name of the target subreddit
+            subreddit_name: The name of the target subreddit.
             site_name: The name of the section in the praw.ini file from which
              the settings are to be loaded. Due to private information therein,
              praw.ini must be configured manually for each user of this program.
-            agent: App's unique identifier required by Reddit API's security
+            agent: App's unique identifier required by Reddit API's security.
         """
         self.reddit = praw.Reddit(site_name, user_agent=agent)
         self.subreddit = self.reddit.subreddit(subreddit_name)
@@ -43,6 +43,14 @@ class RedditCollector:
         self.embedder = Embedder()
 
     def is_valid_comment(self, comment: praw.models.Comment) -> bool:
+        """Validates a comment.
+
+        Args:
+            comment: The comment to be validated.
+
+        Returns:
+            Truth value of whether the comment's author is valid for inspection
+        """
         return (
             comment.author
             and comment.author.name not in self.checked_users
