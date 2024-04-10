@@ -64,17 +64,17 @@ class RedditCollector:
         self,
         user: praw.models.Redditor,
         limit: int = HISTORY_LIMIT,
-        quota: int = COMMENT_QUOTA,
-    ) -> None:
+    ):
         self.checked_users.add(user.name)
 
         # Find all comments in adequate subreddit
-        comments = [
+        return [
             comment
             for comment in user.comments.new(limit=limit)
             if comment.subreddit == self.subreddit
         ]
 
+    def expand_dataset(self, comments, quota: int = COMMENT_QUOTA):
         # Add only if sufficient amount of comments has been found
         if len(comments) >= quota:
             for comment in comments:
