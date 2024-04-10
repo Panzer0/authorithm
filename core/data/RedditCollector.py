@@ -130,6 +130,14 @@ class RedditCollector:
                     break
 
     def gather_comments_from_all(self, limit: int = COMMENT_LIMIT) -> None:
+        """Gathers comments from recent comments and expands the dataset.
+
+        Gathers comments from users who have left one or more of the subreddit's
+        most recent comments. The dataset is expanded by the gathered comments.
+
+        Args:
+            post_limit: The maximal amount of recent comments to be checked.
+        """
         for i, comment in enumerate(self.subreddit.comments(limit=limit)):
             try:
                 print(f"{i}/{limit}")
