@@ -9,7 +9,6 @@ DATASET_FILENAME = f"dataset_{SUBREDDIT_NAME}.parquet.gzip"
 DATASET_PATH = f"datasets/{DATASET_FILENAME}"
 
 
-
 class Embedder:
     def __init__(self, data: pd.DataFrame) -> None:
         self.data = data
@@ -51,15 +50,12 @@ class Embedder:
         ax = sns.barplot(x=thresholds, y=dataset_sizes)
 
         for index, value in enumerate(dataset_sizes):
-            ax.text(index, value, f'{value}', ha='center')
+            ax.text(index, value, f"{value}", ha="center")
 
         plt.xlabel("Comment count threshold")
         plt.ylabel("Dataset size (number of comments)")
         plt.title("Dataset size vs. comment count threshold")
         plt.show()
-
-
-
 
 
 if __name__ == "__main__":

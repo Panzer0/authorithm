@@ -2,16 +2,27 @@ import praw, prawcore
 import pandas as pd
 from core.data.Embedder import Embedder
 
-
+# Default name of the subreddit to gather comments from
 SUBREDDIT_NAME = "writing"
+# The dataset's default filename
 DATASET_FILENAME = f"{SUBREDDIT_NAME}.parquet.gzip"
+# The dataset's default path
 DATASET_PATH = f"datasets/dataset_{DATASET_FILENAME}"
-POST_COUNT = 10
-HISTORY_LIMIT = 150
-COMMENT_QUOTA = 25
+
+# Default site name for praw's Reddit object
 SITE_NAME = "Authorithm"
+# Default user agent for praw's Reddit object
 USER_AGENT = "authorithm by /u/pazur13"
+
+# Default amount of posts to inspect in gather_comments_from_hot()
+POST_LIMIT = 10
+# Default limit of comments to inspect in gather_comments_from_all()
 COMMENT_LIMIT = 20000
+
+# Default limit of comments to be inspected in each given user's history
+HISTORY_LIMIT = 150
+# Default threshold of user's comment count in the given subreddit
+COMMENT_QUOTA = 25
 
 
 class RedditCollector:
@@ -56,7 +67,7 @@ class RedditCollector:
                     }
                 )
 
-    def gather_comments_from_hot(self, post_limit: int = POST_COUNT) -> None:
+    def gather_comments_from_hot(self, post_limit: int = POST_LIMIT) -> None:
         for i, post in enumerate(self.subreddit.hot(limit=post_limit)):
             print(f"{i}/{post_limit}")
             post.comments.replace_more(limit=0)
