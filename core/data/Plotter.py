@@ -16,7 +16,7 @@ class Embedder:
         np.random.seed(123456)
         sns.set_theme()
 
-    def plot_hist(self):
+    def plot_count_hist(self):
         author_counts = self.data["author"].value_counts()
         plt.figure(figsize=(8, 6))
         sns.histplot(data=author_counts)
@@ -28,7 +28,7 @@ class Embedder:
         plt.show()
 
     # Short for Cumulative Distribution Function
-    def plot_CDF(self):
+    def plot_count_CDF(self):
         author_counts = self.data["author"].value_counts()
         plt.figure(figsize=(8, 6))
         sns.ecdfplot(data=author_counts)
@@ -38,7 +38,7 @@ class Embedder:
         plt.title("CDF of comments vs. comment count threshold")
         plt.show()
 
-    def plot_threshold_sizes(self):
+    def plot_count_threshold_sizes(self):
         author_counts = self.data["author"].value_counts()
         thresholds = [25, 50, 75, 100, 125, 150]  # Example thresholds
         dataset_sizes = []
@@ -60,10 +60,11 @@ class Embedder:
 
 
 
+
+
 if __name__ == "__main__":
     dataset = pd.read_parquet(DATASET_PATH)
     embedder = Embedder(dataset)
-    embedder.plot_threshold_sizes()
-    # print(dataset)
-    # print(author_counts.sum())
-    # print(author_counts[author_counts > 50].sum())
+    embedder.plot_count_hist()
+    embedder.plot_count_CDF()
+    embedder.plot_count_threshold_sizes()

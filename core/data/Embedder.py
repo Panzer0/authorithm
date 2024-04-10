@@ -1,5 +1,4 @@
 import matplotlib, torch
-import pandas as pd
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.util import cos_sim
 
