@@ -1,5 +1,4 @@
 import matplotlib, torch
-import pandas as pd
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.util import cos_sim
 
@@ -23,11 +22,3 @@ class Embedder:
     @staticmethod
     def get_cos_sim(tensor_a: torch.Tensor, tensor_b: torch.Tensor) -> float:
         return cos_sim(tensor_a, tensor_b)
-
-
-if __name__ == "__main__":
-    dataset = pd.read_parquet(DATASET_PATH)
-    author_counts = dataset["author"].value_counts()
-    print(dataset)
-    print(author_counts)
-    print(author_counts[author_counts > 50])

@@ -1,9 +1,9 @@
 import praw, prawcore
 import pandas as pd
-from core.embedding.Embedder import Embedder
+from core.data.Embedder import Embedder
 
 
-SUBREDDIT_NAME = "fantasy"
+SUBREDDIT_NAME = "writing"
 DATASET_FILENAME = f"{SUBREDDIT_NAME}.parquet.gzip"
 DATASET_PATH = f"datasets/dataset_{DATASET_FILENAME}"
 POST_COUNT = 10
@@ -11,7 +11,7 @@ HISTORY_LIMIT = 150
 COMMENT_QUOTA = 25
 SITE_NAME = "Authorithm"
 USER_AGENT = "authorithm by /u/pazur13"
-COMMENT_LIMIT = 1000
+COMMENT_LIMIT = 20000
 
 
 class RedditCollector:
