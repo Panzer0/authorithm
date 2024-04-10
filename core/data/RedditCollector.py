@@ -60,7 +60,9 @@ class RedditCollector:
             and not getattr(comment.author, "is_suspended", False)
         )
 
-    def gather_from_user(self, user: praw.models.Redditor, limit: int = HISTORY_LIMIT) -> list[praw.models.Comment]:
+    def gather_from_user(
+        self, user: praw.models.Redditor, limit: int = HISTORY_LIMIT
+    ) -> list[praw.models.Comment]:
         """Gathers comments from user.
 
         Inspects a given amount of user's most recent comments, then returns
@@ -75,14 +77,15 @@ class RedditCollector:
              subreddit.
         """
         self.checked_users.add(user.name)
-
         return [
             comment
             for comment in user.comments.new(limit=limit)
             if comment.subreddit == self.subreddit
         ]
 
-    def expand_dataset(self, comments: list[praw.models.Comment], quota: int = COMMENT_QUOTA):
+    def expand_dataset(
+        self, comments: list[praw.models.Comment], quota: int = COMMENT_QUOTA
+    ):
         # Add only if sufficient amount of comments has been found
         if len(comments) >= quota:
             for comment in comments:
