@@ -61,6 +61,19 @@ class RedditCollector:
         )
 
     def gather_from_user(self, user: praw.models.Redditor, limit: int = HISTORY_LIMIT) -> list[praw.models.Comment]:
+        """Gathers comments from user.
+
+        Inspects a given amount of user's most recent comments, then returns
+        a list of these that belong to the adequate subreddit.
+
+        Args:
+            user: The user whose comments are to be inspected.
+            limit: The limit of comments to be inspected in user's history.
+
+         Returns:
+             A list of comments comments made by the given user in the adequate
+             subreddit.
+        """
         self.checked_users.add(user.name)
 
         return [
