@@ -149,6 +149,14 @@ class RedditCollector:
                 break
 
     def dump_dataset(self, path: str = DATASET_PATH) -> None:
+        """Stores the dataset in a file.
+
+        Converts the dataset contained in self.dataset to a Pandas dataframe,
+        then stores it to a parquet file, compressing it with gzip.
+
+        Args:
+            path: The target path for the dataset file to be created at.
+        """
         df = pd.DataFrame(self.dataset)
         df.set_index("id", inplace=True)
         df.to_parquet(path, compression="gzip")
