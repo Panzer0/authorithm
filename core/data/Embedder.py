@@ -38,4 +38,9 @@ class Embedder:
 
     @staticmethod
     def get_cos_sim(tensor_a: torch.Tensor, tensor_b: torch.Tensor) -> float:
+        """Evaluates the cosine similarity for the two given tensors.
+
+        Args:
+            tensor_a, tensor_b: The compared tensors.
+        """
         return cos_sim(tensor_a, tensor_b)
