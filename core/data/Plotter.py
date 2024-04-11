@@ -27,7 +27,12 @@ class Embedder:
         np.random.seed(123456)
         sns.set_theme()
 
-    def plot_count_hist(self):
+    def plot_count_hist(self) -> None:
+        """Plots a histogram of counts of comments belonging to the same users.
+
+        Args:
+            data: The Pandas DataFrame which contains the analysed dataset
+        """
         author_counts = self.data["author"].value_counts()
         plt.figure(figsize=(8, 6))
         sns.histplot(data=author_counts)
