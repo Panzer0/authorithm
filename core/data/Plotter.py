@@ -59,7 +59,10 @@ class Embedder:
         plt.title("CDF of comments vs. comment count threshold")
         plt.show()
 
-    def plot_count_threshold_sizes(self):
+    def plot_count_threshold_sizes(self) -> None:
+        """Displays a bar plot of dataset sizes given different comment count
+        per user thresholds.
+        """
         author_counts = self.data["author"].value_counts()
         thresholds = [25, 50, 75, 100, 125, 150]  # Example thresholds
         dataset_sizes = []
