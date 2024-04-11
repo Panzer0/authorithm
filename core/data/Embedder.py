@@ -12,6 +12,12 @@ class Embedder:
          embedding model.
     """
     def __init__(self, max_seq_length: int = None) -> None:
+        """Inits Embedder.
+
+        Args:
+            data: The maximal sequence length to be accepted by the embedder.
+             Inputs that exceed the limit will be truncated.
+        """
         self.model = SentenceTransformer(
             "jinaai/jina-embeddings-v2-base-en",
             trust_remote_code=True,
