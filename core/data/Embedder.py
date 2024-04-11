@@ -26,6 +26,14 @@ class Embedder:
             self.model.max_seq_length = max_seq_length
 
     def embed_str(self, data: str) -> torch.Tensor:
+        """Generates an embedding for the given str data.
+
+        Args:
+            data: The data to be embedded.
+
+        Returns:
+            A PyTorch tensor containing the embedding.
+        """
         return self.model.encode(data)
 
     @staticmethod
