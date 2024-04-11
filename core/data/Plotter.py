@@ -12,7 +12,17 @@ DATASET_PATH = f"datasets/{DATASET_FILENAME}"
 
 
 class Embedder:
+    """Plots various parameters of the given dataset.
+
+    Attributes:
+        data: The Pandas DataFrame which contains the analysed dataset.
+    """
     def __init__(self, data: pd.DataFrame) -> None:
+        """Inits RedditCollector.
+
+        Args:
+            data: The Pandas DataFrame which contains the analysed dataset
+        """
         self.data = data
         np.random.seed(123456)
         sns.set_theme()
