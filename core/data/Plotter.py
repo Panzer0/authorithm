@@ -28,10 +28,11 @@ class Embedder:
         sns.set_theme()
 
     def plot_count_hist(self) -> None:
-        """Plots a histogram of counts of comments belonging to the same users.
+        """Displays a histogram of counts of comments belonging to the same
+        authors.
 
         Args:
-            data: The Pandas DataFrame which contains the analysed dataset
+            data: The Pandas DataFrame which contains the analysed dataset.
         """
         author_counts = self.data["author"].value_counts()
         plt.figure(figsize=(8, 6))
@@ -43,8 +44,12 @@ class Embedder:
 
         plt.show()
 
-    # Short for Cumulative Distribution Function
-    def plot_count_CDF(self):
+    def plot_count_CDF(self) -> None:
+        """Displays a CDF plot.
+
+        Displays a cumulative distribution function plot of counts of
+        comments written by the same user against their cumulative proportion.
+        """
         author_counts = self.data["author"].value_counts()
         plt.figure(figsize=(8, 6))
         sns.ecdfplot(data=author_counts)
