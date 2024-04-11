@@ -2,12 +2,15 @@ import matplotlib, torch
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.util import cos_sim
 
-SUBREDDIT_NAME = "fantasy"
-DATASET_FILENAME = f"dataset_{SUBREDDIT_NAME}.parquet.gzip"
-DATASET_PATH = f"datasets/{DATASET_FILENAME}"
-
 
 class Embedder:
+    """Generates embeddings for provided data using the
+    jinaai/jina-embeddings-v2-base-en model.
+
+    Attributes:
+        model: An object of the jinaai/jina-embeddings-v2-base-en text
+         embedding model.
+    """
     def __init__(self, max_seq_length: int = None) -> None:
         self.model = SentenceTransformer(
             "jinaai/jina-embeddings-v2-base-en",
