@@ -11,14 +11,14 @@ DATASET_FILENAME = f"dataset_{SUBREDDIT_NAME}.parquet.gzip"
 DATASET_PATH = f"datasets/{DATASET_FILENAME}"
 
 
-class Embedder:
+class Plotter:
     """Plots various parameters of the given dataset.
 
     Attributes:
         data: The Pandas DataFrame which contains the analysed dataset.
     """
     def __init__(self, data: pd.DataFrame) -> None:
-        """Inits RedditCollector.
+        """Inits Plotter.
 
         Args:
             data: The Pandas DataFrame which contains the analysed dataset
@@ -85,7 +85,7 @@ class Embedder:
 
 if __name__ == "__main__":
     dataset = pd.read_parquet(DATASET_PATH)
-    embedder = Embedder(dataset)
-    embedder.plot_count_hist()
-    embedder.plot_count_CDF()
-    embedder.plot_count_threshold_sizes()
+    plotter = Plotter(dataset)
+    plotter.plot_count_hist()
+    plotter.plot_count_CDF()
+    plotter.plot_count_threshold_sizes()
