@@ -107,7 +107,7 @@ class RedditCollector:
 
         Expands the dataset by a list of comments provided it meets the given
         size quota. Each dataset entry consists of the comment's ID, its
-        author's name, its body and an embedding of its body.
+        author's name, its body, an embedding of its body and its word count.
 
         Args:
             comments: A list of comments to be appended to the dataset.
@@ -121,6 +121,7 @@ class RedditCollector:
                         "author": comment.author.name,
                         "body": comment.body,
                         "embedding": self.embedder.embed_str(comment.body),
+                        "word_count": len(comment.body.split())
                     }
                 )
 
