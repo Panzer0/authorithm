@@ -59,22 +59,22 @@ class RedditCollector:
         self.checked_users = set()
         self.embedder = Embedder()
 
-    def is_valid_comment(self, comment: praw.models.Comment) -> bool:
+    def is_valid_user(self, user: praw.models.Redditor) -> bool:
         """Validates a comment.
 
         Validates whether the comment's author exists, has not been checked
         before and remains unsuspended.
 
         Args:
-            comment: The comment to be validated.
+            user: The comment to be validated.
 
         Returns:
             Truth value of whether the comment's author is valid for inspection.
         """
         return (
-            comment.author
-            and comment.author.name not in self.checked_users
-            and not getattr(comment.author, "is_suspended", False)
+                user
+                and user.name not in self.checked_users
+                and not getattr(user, "is_suspended", False)
         )
 
     def gather_from_user(
@@ -140,7 +140,7 @@ class RedditCollector:
             post.comments.replace_more(limit=0)
             for comment in post.comments.list():
                 try:
-                    if self.is_valid_comment(comment):
+                    if self.is_valid_user(comment.author):
                         comments = self.gather_from_user(comment.author)
                         self.expand_dataset(comments)
                 except prawcore.exceptions.TooManyRequests as e:
@@ -159,7 +159,7 @@ class RedditCollector:
         for i, comment in enumerate(self.subreddit.comments(limit=limit)):
             try:
                 print(f"{i}/{limit}")
-                if self.is_valid_comment(comment):
+                if self.is_valid_user(comment.author):
                     comments = self.gather_from_user(comment.author)
                     self.expand_dataset(comments)
             except prawcore.exceptions.TooManyRequests as e:
