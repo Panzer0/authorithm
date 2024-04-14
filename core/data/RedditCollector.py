@@ -3,7 +3,7 @@ import pandas as pd
 from core.data.Embedder import Embedder
 
 # Default name of the subreddit to gather comments from
-SUBREDDIT_NAME = "writing"
+SUBREDDIT_NAME = "games"
 # The dataset's default filename
 DATASET_FILENAME = f"{SUBREDDIT_NAME}.parquet.gzip"
 # The dataset's default path
@@ -43,6 +43,7 @@ class RedditCollector:
          comments for the dataset.
 
     """
+
     def __init__(self, subreddit_name: str, site_name: str, agent: str) -> None:
         """Inits RedditCollector.
 
@@ -71,11 +72,14 @@ class RedditCollector:
         Returns:
             Truth value of whether the comment's author is valid for inspection.
         """
-        return (
+        try:
+            return (
                 user
                 and user.name not in self.checked_users
                 and not getattr(user, "is_suspended", False)
-        )
+            )
+        except prawcore.exceptions.NotFound:
+            return False
 
     def gather_from_user(
         self, user: praw.models.Redditor, limit: int = HISTORY_LIMIT
@@ -121,7 +125,7 @@ class RedditCollector:
                         "author": comment.author.name,
                         "body": comment.body,
                         "embedding": self.embedder.embed_str(comment.body),
-                        "word_count": len(comment.body.split())
+                        "word_count": len(comment.body.split()),
                     }
                 )
 
