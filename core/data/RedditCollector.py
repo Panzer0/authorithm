@@ -129,6 +129,21 @@ class RedditCollector:
                     }
                 )
 
+    def gather_comments_from_users(self, usernames: set[str]) -> None:
+        """Gathers comments from given users and expands the dataset.
+
+        Gathers comments from users whose usernames are given in the argument.
+        The dataset is expanded by the gathered comments.
+
+        Args:
+            usernames: A set of usernames of target users.
+        """
+        users = {self.reddit.redditor(username) for username in usernames}
+        for user in users:
+            if self.is_valid_user(user):
+                comments = self.gather_from_user(user)
+                self.expand_dataset(comments)
+
     def gather_comments_from_hot(self, post_limit: int = POST_LIMIT) -> None:
         """Gathers comments from hot posts and expands the dataset.
 
