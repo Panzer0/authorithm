@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import plotly.graph_objs as go
+from sklearn.decomposition import PCA
+
 
 # Name of the subreddit the default dataset is derived from
 SUBREDDIT_NAME = "fantasy"
@@ -83,6 +86,49 @@ class Plotter:
         plt.title("Dataset size vs. comment count threshold")
         plt.show()
 
+    def plot_PCA(self) -> None:
+        """Displays a PCA plot.
+
+        Displays a PCA (principal component analysis) plot of the dataset's
+        embeddings using plotly.
+        """
+        categories = self.data["author"].unique()
+
+        pca = PCA(n_components=3)
+        pca_embeddings = pca.fit_transform(self.data["embedding"].tolist())
+
+        fig = go.Figure()
+
+        for i, category in enumerate(categories):
+            category_mask = self.data["author"] == category
+            category_embeddings = pca_embeddings[category_mask]
+
+            fig.add_trace(
+                go.Scatter3d(
+                    x=category_embeddings[:, 0],
+                    y=category_embeddings[:, 1],
+                    z=category_embeddings[:, 2],
+                    mode="markers",
+                    marker=dict(
+                        size=5, color=i, colorscale="Viridis", opacity=0.8
+                    ),
+                    name=category,
+                )
+            )
+
+        fig.update_layout(
+            autosize=False,
+            title="3D Scatter Plot of Users",
+            width=1600,
+            height=1000,
+            scene=dict(
+                xaxis=dict(title="x"),
+                yaxis=dict(title="y"),
+                zaxis=dict(title="z"),
+            ),
+        )
+
+        fig.show()
 
 if __name__ == "__main__":
     dataset = pd.read_parquet(DATASET_PATH)
@@ -90,3 +136,4 @@ if __name__ == "__main__":
     plotter.plot_count_hist()
     plotter.plot_count_CDF()
     plotter.plot_count_threshold_sizes()
+    plotter.plot_PCA()
