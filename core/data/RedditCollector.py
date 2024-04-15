@@ -154,7 +154,7 @@ class RedditCollector:
         most recent comments. The dataset is expanded by the gathered comments.
 
         Args:
-            post_limit: The maximal amount of recent comments to be checked.
+            limit: The maximal amount of recent comments to be checked.
         """
         for i, comment in enumerate(self.subreddit.comments(limit=limit)):
             try:
