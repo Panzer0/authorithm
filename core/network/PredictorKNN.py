@@ -1,5 +1,6 @@
-from sklearn.model_selection import train_test_split
 from core.data.RedditDataset import RedditDataset
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
 
 # Name of the subreddit the default dataset is derived from
 SUBREDDIT_NAME = "fantasy"
@@ -9,7 +10,7 @@ DATASET_FILENAME = f"dataset_{SUBREDDIT_NAME}.parquet.gzip"
 DATASET_PATH = f"datasets/{DATASET_FILENAME}"
 
 
-class FineTuner:
+class PredictorKNN:
     def __init__(self) -> None:
         super().__init__()
 
@@ -23,3 +24,11 @@ if __name__ == "__main__":
         random_state=42,
         test_size=0.2,
     )
+
+    k = 5
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(embed_train, authors_train)
+
+    y_pred = knn.predict(embed_test)
+    accuracy = knn.score(embed_test, authors_test)
+    print(f"Accuracy: {accuracy}")
