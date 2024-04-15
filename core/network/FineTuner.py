@@ -18,12 +18,7 @@ class FineTuner:
 
 if __name__ == "__main__":
     dataset = RedditDataset(DATASET_PATH)
-    (
-        embeddings_train,
-        embeddings_test,
-        authors_train,
-        authors_test,
-    ) = train_test_split(
+    embed_train, embed_test, authors_train, authors_test = train_test_split(
         dataset.embeddings,
         dataset.authors,
         stratify=dataset.authors,
