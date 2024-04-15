@@ -3,7 +3,7 @@ import pandas as pd
 from core.data.Embedder import Embedder
 
 # Default name of the subreddit to gather comments from
-SUBREDDIT_NAME = "writing"
+SUBREDDIT_NAME = "games"
 # The dataset's default filename
 DATASET_FILENAME = f"{SUBREDDIT_NAME}.parquet.gzip"
 # The dataset's default path
@@ -60,23 +60,26 @@ class RedditCollector:
         self.checked_users = set()
         self.embedder = Embedder()
 
-    def is_valid_comment(self, comment: praw.models.Comment) -> bool:
+    def is_valid_user(self, user: praw.models.Redditor) -> bool:
         """Validates a comment.
 
         Validates whether the comment's author exists, has not been checked
         before and remains unsuspended.
 
         Args:
-            comment: The comment to be validated.
+            user: The comment to be validated.
 
         Returns:
             Truth value of whether the comment's author is valid for inspection.
         """
-        return (
-            comment.author
-            and comment.author.name not in self.checked_users
-            and not getattr(comment.author, "is_suspended", False)
-        )
+        try:
+            return (
+                user
+                and user.name not in self.checked_users
+                and not getattr(user, "is_suspended", False)
+            )
+        except prawcore.exceptions.NotFound:
+            return False
 
     def gather_from_user(
         self, user: praw.models.Redditor, limit: int = HISTORY_LIMIT
@@ -126,6 +129,21 @@ class RedditCollector:
                     }
                 )
 
+    def gather_comments_from_users(self, usernames: set[str]) -> None:
+        """Gathers comments from given users and expands the dataset.
+
+        Gathers comments from users whose usernames are given in the argument.
+        The dataset is expanded by the gathered comments.
+
+        Args:
+            usernames: A set of usernames of target users.
+        """
+        users = {self.reddit.redditor(username) for username in usernames}
+        for user in users:
+            if self.is_valid_user(user):
+                comments = self.gather_from_user(user)
+                self.expand_dataset(comments)
+
     def gather_comments_from_hot(self, post_limit: int = POST_LIMIT) -> None:
         """Gathers comments from hot posts and expands the dataset.
 
@@ -141,7 +159,7 @@ class RedditCollector:
             post.comments.replace_more(limit=0)
             for comment in post.comments.list():
                 try:
-                    if self.is_valid_comment(comment):
+                    if self.is_valid_user(comment.author):
                         comments = self.gather_from_user(comment.author)
                         self.expand_dataset(comments)
                 except prawcore.exceptions.TooManyRequests as e:
@@ -160,7 +178,7 @@ class RedditCollector:
         for i, comment in enumerate(self.subreddit.comments(limit=limit)):
             try:
                 print(f"{i}/{limit}")
-                if self.is_valid_comment(comment):
+                if self.is_valid_user(comment.author):
                     comments = self.gather_from_user(comment.author)
                     self.expand_dataset(comments)
             except prawcore.exceptions.TooManyRequests as e:
