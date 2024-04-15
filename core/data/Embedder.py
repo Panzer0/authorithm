@@ -11,6 +11,7 @@ class Embedder:
         model: An object of the jinaai/jina-embeddings-v2-base-en text
          embedding model.
     """
+
     def __init__(self, max_seq_length: int = None) -> None:
         """Inits Embedder.
 

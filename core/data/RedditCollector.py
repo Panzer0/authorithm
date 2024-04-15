@@ -43,6 +43,7 @@ class RedditCollector:
          comments for the dataset.
 
     """
+
     def __init__(self, subreddit_name: str, site_name: str, agent: str) -> None:
         """Inits RedditCollector.
 
@@ -121,7 +122,7 @@ class RedditCollector:
                         "author": comment.author.name,
                         "body": comment.body,
                         "embedding": self.embedder.embed_str(comment.body),
-                        "word_count": len(comment.body.split())
+                        "word_count": len(comment.body.split()),
                     }
                 )
 

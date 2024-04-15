@@ -17,6 +17,7 @@ class Plotter:
     Attributes:
         data: The Pandas DataFrame which contains the analysed dataset.
     """
+
     def __init__(self, data: pd.DataFrame) -> None:
         """Inits Plotter.
 

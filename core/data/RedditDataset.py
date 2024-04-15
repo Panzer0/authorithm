@@ -8,8 +8,9 @@ DATASET_FILENAME = f"dataset_{SUBREDDIT_NAME}.parquet.gzip"
 # The default dataset's path
 DATASET_PATH = f"datasets/{DATASET_FILENAME}"
 
-class CustomImageDataset(Dataset):
-    def __init__(self, data_file = DATASET_PATH):
+
+class RedditDataset(Dataset):
+    def __init__(self, data_file=DATASET_PATH):
         dataframe = pd.read_parquet(data_file)
         self.embeddings = dataframe["embedding"]
         self.authors = dataframe["author"]
