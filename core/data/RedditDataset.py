@@ -12,8 +12,8 @@ DATASET_PATH = f"datasets/{DATASET_FILENAME}"
 class RedditDataset(Dataset):
     def __init__(self, data_file=DATASET_PATH):
         dataframe = pd.read_parquet(data_file)
-        self.embeddings = dataframe["embedding"]
-        self.authors = dataframe["author"]
+        self.embeddings = dataframe["embedding"].to_list()
+        self.authors = dataframe["author"].values
 
     def __len__(self):
         return len(self.img_labels)
