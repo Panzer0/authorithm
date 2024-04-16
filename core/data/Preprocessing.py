@@ -27,9 +27,9 @@ def balance_dataset(df: pd.DataFrame, sample_count: int) -> pd.DataFrame:
     """
     return (
         df.groupby("author")
-            .filter(lambda x: len(x) >= 50)
+            .filter(lambda x: len(x) >= sample_count)
             .groupby("author")
-            .apply(lambda x: x.sample(n=50, random_state=42))
+            .apply(lambda x: x.sample(n=sample_count, random_state=42))
             .reset_index(level=0, drop=True)
     )
 
