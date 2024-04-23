@@ -4,12 +4,15 @@ import numpy as np
 import seaborn as sns
 import plotly.graph_objs as go
 from sklearn.decomposition import PCA
-
+from core.data.Preprocessing import (
+    prune_below_user_count,
+    prune_above_user_count,
+)
 
 # Name of the subreddit the default dataset is derived from
 SUBREDDIT_NAME = "fantasy"
 # The default dataset's filename
-DATASET_FILENAME = f"dataset_{SUBREDDIT_NAME}.parquet.gzip"
+DATASET_FILENAME = f"dataset_{SUBREDDIT_NAME}_large.parquet.gzip"
 # The default dataset's path
 DATASET_PATH = f"datasets/{DATASET_FILENAME}"
 
@@ -39,12 +42,17 @@ class Plotter:
             data: The Pandas DataFrame which contains the analysed dataset.
         """
         author_counts = self.data["author"].value_counts()
+        print("Author counts")
         plt.figure(figsize=(8, 6))
-        sns.histplot(data=author_counts)
+        print("Plt.figure")
+        sns.histplot(data=author_counts, bins=10)
+        print("Past histplot")
 
         plt.xlabel("Comment count")
         plt.ylabel("User count")
         plt.title("Distribution of comment counts per author")
+
+        print("About to show")
 
         plt.show()
 
@@ -63,12 +71,13 @@ class Plotter:
         plt.title("CDF of comments vs. comment count threshold")
         plt.show()
 
-    def plot_count_threshold_sizes(self) -> None:
+    def plot_count_threshold_sizes(
+        self, thresholds=[25, 50, 75, 100, 125, 150]
+    ) -> None:
         """Displays a bar plot of dataset sizes given different comment count
         per user thresholds.
         """
         author_counts = self.data["author"].value_counts()
-        thresholds = [25, 50, 75, 100, 125, 150]  # Example thresholds
         dataset_sizes = []
 
         for threshold in thresholds:
@@ -130,10 +139,16 @@ class Plotter:
 
         fig.show()
 
+
 if __name__ == "__main__":
     dataset = pd.read_parquet(DATASET_PATH)
+    dataset = prune_below_user_count(dataset, 50)
+    dataset = prune_above_user_count(dataset, 300)
+    print("Parquet read")
     plotter = Plotter(dataset)
+    print("Plotter created")
     plotter.plot_count_hist()
+    print("First plot done")
     plotter.plot_count_CDF()
-    plotter.plot_count_threshold_sizes()
+    plotter.plot_count_threshold_sizes([50, 100, 150, 200, 250, 300])
     plotter.plot_PCA()
