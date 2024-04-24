@@ -59,8 +59,8 @@ def prune_above_user_count(df: pd.DataFrame, limit: int) -> pd.DataFrame:
 
     Args:
         df: The dataframe that is to be pruned.
-        limit: The maximal amount of comments belonging to an author permitted
-         in the resulting dataframe.
+        limit: The maximal permitted amount of comments belonging to the same
+         author in the resulting dataframe.
 
     Returns:
         A copy of the given dataframe in which no author's comment count exceeds
