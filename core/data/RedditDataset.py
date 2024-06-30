@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset
 import pandas as pd
 
+
 class RedditDataset(Dataset):
     def __init__(self, data_file):
         dataframe = pd.read_parquet(data_file)

@@ -2,6 +2,7 @@ from sklearn.model_selection import train_test_split
 from core.data.RedditDataset import RedditDataset
 from core.config import DATASET_PATH
 
+
 class FineTuner:
     def __init__(self) -> None:
         super().__init__()

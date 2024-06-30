@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def balance_dataset(df: pd.DataFrame, sample_count: int) -> pd.DataFrame:
     """Balances a dataset.
 

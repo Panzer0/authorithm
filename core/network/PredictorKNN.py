@@ -5,7 +5,6 @@ from sklearn.model_selection import train_test_split
 from core.config import DATASET_PATH
 
 
-
 class PredictorKNN:
     def __init__(self) -> None:
         super().__init__()

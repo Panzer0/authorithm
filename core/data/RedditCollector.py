@@ -4,7 +4,6 @@ from core.data.Embedder import Embedder
 
 from core.config import DATASET_PATH, SUBREDDIT_NAME
 
-
 # Default site name for praw's Reddit object
 SITE_NAME = "Authorithm"
 # Default user agent for praw's Reddit object
