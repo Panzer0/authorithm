@@ -237,3 +237,4 @@ praw.ini
 # The datasets obtained via RedditIntegration
 datasets/
 /datasets
+/raw_data/
