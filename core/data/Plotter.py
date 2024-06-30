@@ -4,10 +4,7 @@ import numpy as np
 import seaborn as sns
 import plotly.graph_objs as go
 from sklearn.decomposition import PCA
-from core.data.Preprocessing import (
-    prune_below_user_count,
-    prune_above_user_count,
-)
+from core.data.Preprocessing import balance_dataset
 
 # Name of the subreddit the default dataset is derived from
 SUBREDDIT_NAME = "fantasy"
@@ -142,8 +139,9 @@ class Plotter:
 
 if __name__ == "__main__":
     dataset = pd.read_parquet(DATASET_PATH)
-    dataset = prune_below_user_count(dataset, 50)
-    dataset = prune_above_user_count(dataset, 300)
+    dataset = balance_dataset(dataset, 1000)
+    dataset = prune_below_user_count(dataset, 1000)
+    dataset = prune_above_user_count(dataset, 1000)
     print("Parquet read")
     plotter = Plotter(dataset)
     print("Plotter created")
