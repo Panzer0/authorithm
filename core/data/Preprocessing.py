@@ -29,6 +29,37 @@ def balance_dataset(df: pd.DataFrame, sample_count: int) -> pd.DataFrame:
     balanced_df = prune_above_user_count(balanced_df, sample_count)
     return balanced_df
 
+def prune_dataset(df: pd.DataFrame, threshold: int, limit: int) -> pd.DataFrame:
+    """Prune a dataset based on user comment counts.
+
+    This function prunes a dataset to include comments from users who have at least
+    a specified number of comments (threshold) and limits the number of comments
+    per user to a maximum value (limit).
+
+    Args:
+        df (pd.DataFrame): The input dataframe to be pruned.
+        threshold (int): The minimum number of comments an author must have for
+            their comments to be included in the result.
+        limit (int): The maximum number of comments allowed per author in the
+            resulting dataframe.
+
+    Returns:
+        pd.DataFrame: A copy of the input dataframe, pruned according to the
+        specified threshold and limit.
+
+    Raises:
+        ValueError: If threshold is greater than limit.
+
+    Note:
+        This function calls prune_below_user_count() and prune_above_user_count()
+        to perform the pruning operations.
+    """
+    if threshold > limit:
+        raise ValueError("Threshold must not be greater than limit")
+    balanced_df = prune_below_user_count(df, threshold)
+    balanced_df = prune_above_user_count(balanced_df, limit)
+    return balanced_df
+
 
 def prune_below_user_count(df: pd.DataFrame, threshold: int) -> pd.DataFrame:
     """Prunes comments from users whose comment count is below threshold.
