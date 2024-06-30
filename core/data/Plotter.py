@@ -140,8 +140,6 @@ class Plotter:
 if __name__ == "__main__":
     dataset = pd.read_parquet(DATASET_PATH)
     dataset = balance_dataset(dataset, 1000)
-    dataset = prune_below_user_count(dataset, 1000)
-    dataset = prune_above_user_count(dataset, 1000)
     print("Parquet read")
     plotter = Plotter(dataset)
     print("Plotter created")
