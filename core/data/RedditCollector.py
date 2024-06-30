@@ -2,12 +2,8 @@ import praw, prawcore
 import pandas as pd
 from core.data.Embedder import Embedder
 
-# Default name of the subreddit to gather comments from
-SUBREDDIT_NAME = "games"
-# The dataset's default filename
-DATASET_FILENAME = f"{SUBREDDIT_NAME}.parquet.gzip"
-# The dataset's default path
-DATASET_PATH = f"datasets/dataset_{DATASET_FILENAME}"
+from core.config import DATASET_PATH, SUBREDDIT_NAME
+
 
 # Default site name for praw's Reddit object
 SITE_NAME = "Authorithm"

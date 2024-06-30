@@ -1,16 +1,8 @@
 from torch.utils.data import Dataset
 import pandas as pd
 
-# Name of the subreddit the default dataset is derived from
-SUBREDDIT_NAME = "fantasy"
-# The default dataset's filename
-DATASET_FILENAME = f"dataset_{SUBREDDIT_NAME}.parquet.gzip"
-# The default dataset's path
-DATASET_PATH = f"datasets/{DATASET_FILENAME}"
-
-
 class RedditDataset(Dataset):
-    def __init__(self, data_file=DATASET_PATH):
+    def __init__(self, data_file):
         dataframe = pd.read_parquet(data_file)
         self.embeddings = dataframe["embedding"].to_list()
         self.authors = dataframe["author"].values
