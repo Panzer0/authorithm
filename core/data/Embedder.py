@@ -2,6 +2,7 @@ import matplotlib, torch
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.util import cos_sim
 
+MODEL_NAME = jinaai/jina-embeddings-v2-base-en
 
 class Embedder:
     """Generates embeddings for provided data using the
@@ -19,10 +20,7 @@ class Embedder:
             data: The maximal sequence length to be accepted by the embedder.
              Inputs that exceed the limit will be truncated.
         """
-        self.model = SentenceTransformer(
-            "jinaai/jina-embeddings-v2-base-en",
-            trust_remote_code=True,
-        )
+        self.model = SentenceTransformer(MODEL_NAME, trust_remote_code=True)
         if max_seq_length:
             self.model.max_seq_length = max_seq_length
 
