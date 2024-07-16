@@ -2,7 +2,7 @@ import matplotlib, torch
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.util import cos_sim
 
-MODEL_NAME = jinaai/jina-embeddings-v2-base-en
+MODEL_NAME = "jinaai/jina-embeddings-v2-base-en"
 
 class Embedder:
     """Generates embeddings for provided data using the
