@@ -96,7 +96,11 @@ class Plotter:
         categories = self.data["author"].unique()
 
         pca = PCA(n_components=3)
-        pca_embeddings = pca.fit_transform(self.data["embedding"].tolist())
+
+        embedding_columns = [f'embedding_{i}' for i in range(512)]
+        embeddings = dataset[embedding_columns].values
+
+        pca_embeddings = pca.fit_transform(embeddings)
 
         fig = go.Figure()
 
