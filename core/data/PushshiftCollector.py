@@ -8,9 +8,6 @@ import zstandard as zstd
 import io
 from core.config import UNCOMPRESSED_PATH, COMPRESSED_PATH
 
-# Name of the subreddit the default dataset is derived from
-SUBREDDIT_NAME = "fantasy"
-
 
 class ParquetChunkWriter:
     def __init__(self, parquet_file_path: str, compression: str):
