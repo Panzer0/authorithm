@@ -3,8 +3,11 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import plotly.graph_objs as go
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, IncrementalPCA
+from tqdm import tqdm
+
 from core.data.Preprocessing import balance_dataset, prune_dataset
+import pyarrow.parquet as pq
 
 from core.config import DATASET_PATH
 
@@ -97,7 +100,7 @@ class Plotter:
 
         pca = PCA(n_components=3)
 
-        embedding_columns = [f'embedding_{i}' for i in range(512)]
+        embedding_columns = [f"embedding_{i}" for i in range(512)]
         embeddings = dataset[embedding_columns].values
 
         pca_embeddings = pca.fit_transform(embeddings)
@@ -135,17 +138,113 @@ class Plotter:
 
         fig.show()
 
+    def plot_PCA_incremental(self, data_file) -> None:
+        """Displays an incremental PCA plot.
+
+        Displays an incremental PCA (principal component analysis) plot of the
+        dataset's embeddings using plotly. Use this when the dataset's size is
+        too large to fit in the memory.
+        """
+        categories = self.data["author"].unique()
+
+        ipca = IncrementalPCA(n_components=3, batch_size=10)
+
+        print("Starting PCA fitting process...")
+        embedding_columns = [f"embedding_{i}" for i in range(512)]
+
+        batch_count = sum(1 for _ in data_file.iter_batches())
+        for batch in tqdm(
+            data_file.iter_batches(), total=batch_count, desc="Fitting the PCA"
+        ):
+            batch_df = batch.to_pandas()
+
+            batch_df[embedding_columns] = batch_df[embedding_columns].apply(
+                pd.to_numeric, errors="coerce"
+            )
+
+            embeddings = batch_df[embedding_columns].values
+            ipca.partial_fit(embeddings)
+
+        transformed = None
+
+        print("PCA fitting finished. Starting PCA transformation process...")
+
+        for batch in tqdm(
+            data_file.iter_batches(),
+            total=batch_count,
+            desc="Transforming the PCA",
+        ):
+            batch_df = batch.to_pandas()
+
+            batch_df[embedding_columns] = batch_df[embedding_columns].apply(
+                pd.to_numeric, errors="coerce"
+            )
+
+            embeddings = batch_df[embedding_columns].values
+            pca_embeddings = ipca.transform(embeddings)
+
+            if transformed is None:
+                transformed = pca_embeddings
+            else:
+                transformed = np.vstack((transformed, pca_embeddings))
+
+        print("PCA transformation process complete. Preparing the plot...")
+
+        fig = go.Figure()
+
+        for i, category in enumerate(
+            tqdm(
+                categories, total=len(categories), desc="Constructing PCA graph"
+            )
+        ):
+            category_mask = self.data["author"] == category
+            category_embeddings = transformed[category_mask]
+            if i == 0:
+                print(f"embedding: {category_embeddings} \n x: {category_embeddings[:, 0]}")
+
+            fig.add_trace(
+                go.Scatter3d(
+                    x=category_embeddings[:, 0],
+                    y=category_embeddings[:, 1],
+                    z=category_embeddings[:, 2],
+                    mode="markers",
+                    marker=dict(
+                        size=5, color=i, colorscale="Viridis", opacity=0.8
+                    ),
+                    name=category,
+                )
+            )
+
+        fig.update_layout(
+            autosize=False,
+            title="3D Scatter Plot of Users",
+            width=1600,
+            height=1000,
+            scene=dict(
+                xaxis=dict(title="x"),
+                yaxis=dict(title="y"),
+                zaxis=dict(title="z"),
+            ),
+        )
+
+        fig.show()
+
 
 if __name__ == "__main__":
-    dataset = pd.read_parquet(DATASET_PATH)
-    dataset = prune_dataset(dataset, 100, 1000)
-    print("Parquet read")
+    print("Let's get started")
+    dataset = pd.read_parquet(DATASET_PATH, columns=["id", "author"])
+    print("Got the light dataset")
+    dataset_pq_file = pq.ParquetFile(DATASET_PATH)
+    print("Data successfully read")
+    # dataset = prune_dataset(dataset, 100, 1000)
+    # print("Parquet pruned")
     plotter = Plotter(dataset)
-    print("Plotter created")
-    plotter.plot_count_hist()
-    print("First plot done")
-    plotter.plot_count_CDF()
-    plotter.plot_count_threshold_sizes(
-        [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
-    )
-    plotter.plot_PCA()
+    # print("Plotter created")
+    # plotter.plot_count_hist()
+    # print("First plot done")
+    # plotter.plot_count_CDF()
+    # plotter.plot_count_threshold_sizes(
+    #     [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+    # )
+    print("Plotting PCA...")
+    plotter.plot_PCA_incremental(dataset_pq_file)
