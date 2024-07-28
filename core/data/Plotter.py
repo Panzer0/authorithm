@@ -138,7 +138,7 @@ class Plotter:
 
         fig.show()
 
-    def plot_PCA_incremental(self, data_file) -> None:
+    def plot_PCA_incremental(self, data_file, batch_size=65536) -> None:
         """Displays an incremental PCA plot.
 
         Displays an incremental PCA (principal component analysis) plot of the
@@ -146,49 +146,62 @@ class Plotter:
         too large to fit in the memory.
         """
         categories = self.data["author"].unique()
+        valid_ids = self.data["id"].unique()
 
-        ipca = IncrementalPCA(n_components=3, batch_size=10)
+        ipca = IncrementalPCA(n_components=3, batch_size=batch_size)
 
         print("Starting PCA fitting process...")
         embedding_columns = [f"embedding_{i}" for i in range(512)]
 
-        batch_count = sum(1 for _ in data_file.iter_batches())
+        batch_count = sum(1 for _ in data_file.iter_batches(batch_size=batch_size))
         for batch in tqdm(
-            data_file.iter_batches(), total=batch_count, desc="Fitting the PCA"
+            data_file.iter_batches(batch_size=batch_size), total=batch_count, desc="Fitting the PCA"
         ):
             batch_df = batch.to_pandas()
+            batch_df = batch_df[batch_df["id"].isin(valid_ids)]
+            if batch_df.empty:
+                continue
 
             batch_df[embedding_columns] = batch_df[embedding_columns].apply(
                 pd.to_numeric, errors="coerce"
             )
-
             embeddings = batch_df[embedding_columns].values
             ipca.partial_fit(embeddings)
 
-        transformed = None
+        transformed = []
+        transformed_ids = []
 
         print("PCA fitting finished. Starting PCA transformation process...")
 
         for batch in tqdm(
-            data_file.iter_batches(),
+            data_file.iter_batches(batch_size=batch_size),
             total=batch_count,
             desc="Transforming the PCA",
         ):
             batch_df = batch.to_pandas()
+            batch_df = batch_df[batch_df["id"].isin(valid_ids)]
+            if batch_df.empty:
+                continue
 
             batch_df[embedding_columns] = batch_df[embedding_columns].apply(
                 pd.to_numeric, errors="coerce"
             )
-
             embeddings = batch_df[embedding_columns].values
             pca_embeddings = ipca.transform(embeddings)
 
-            if transformed is None:
-                transformed = pca_embeddings
-            else:
-                transformed = np.vstack((transformed, pca_embeddings))
+            transformed.append(pca_embeddings)
+            transformed_ids.extend(batch_df["id"].values)
+
+        transformed = np.vstack(transformed)
+        transformed_ids = np.array(transformed_ids)
+
+        explained_variance = ipca.explained_variance_ratio_
+        print(f"Explained variance by component: {explained_variance}")
+        print(f"Cumulative explained variance: {np.cumsum(explained_variance)}")
 
         print("PCA transformation process complete. Preparing the plot...")
+
+        id_to_index = {id_: index for index, id_ in enumerate(transformed_ids)}
 
         fig = go.Figure()
 
@@ -198,9 +211,12 @@ class Plotter:
             )
         ):
             category_mask = self.data["author"] == category
-            category_embeddings = transformed[category_mask]
-            if i == 0:
-                print(f"embedding: {category_embeddings} \n x: {category_embeddings[:, 0]}")
+            category_ids = self.data[category_mask]["id"].values
+
+            category_indices = [
+                id_to_index[id_] for id_ in category_ids if id_ in id_to_index
+            ]
+            category_embeddings = transformed[category_indices]
 
             fig.add_trace(
                 go.Scatter3d(
@@ -236,7 +252,7 @@ if __name__ == "__main__":
     print("Got the light dataset")
     dataset_pq_file = pq.ParquetFile(DATASET_PATH)
     print("Data successfully read")
-    # dataset = prune_dataset(dataset, 100, 1000)
+    dataset = balance_dataset(dataset, 1000)
     # print("Parquet pruned")
     plotter = Plotter(dataset)
     # print("Plotter created")
