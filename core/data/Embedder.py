@@ -1,6 +1,7 @@
-import matplotlib, torch
+import torch
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.util import cos_sim
+from torch import Tensor
 
 MODEL_NAME = "jinaai/jina-embeddings-v2-small-en"
 """Also tested:
@@ -45,7 +46,7 @@ class Embedder:
         return {f"embedding_{i}": embedding[i] for i in range(embedding.shape[0])}
 
     @staticmethod
-    def get_cos_sim(tensor_a: torch.Tensor, tensor_b: torch.Tensor) -> float:
+    def get_cos_sim(tensor_a: torch.Tensor, tensor_b: torch.Tensor) -> Tensor:
         """Evaluates the cosine similarity for the two given tensors.
 
         Args:
