@@ -62,7 +62,6 @@ class ParquetChunkWriter:
 class PushshiftCollector:
     def __init__(self) -> None:
         self.embedder = Embedder()
-        self.dataset = None
 
     def zst_to_parquet_with_embeddings(
         self,
