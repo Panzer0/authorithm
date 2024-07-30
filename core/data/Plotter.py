@@ -3,8 +3,11 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import plotly.graph_objs as go
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, IncrementalPCA
+from tqdm import tqdm
+
 from core.data.Preprocessing import balance_dataset, prune_dataset
+import pyarrow.parquet as pq
 
 from core.config import DATASET_PATH
 
@@ -96,7 +99,11 @@ class Plotter:
         categories = self.data["author"].unique()
 
         pca = PCA(n_components=3)
-        pca_embeddings = pca.fit_transform(self.data["embedding"].tolist())
+
+        embedding_columns = [f"embedding_{i}" for i in range(512)]
+        embeddings = dataset[embedding_columns].values
+
+        pca_embeddings = pca.fit_transform(embeddings)
 
         fig = go.Figure()
 
@@ -131,17 +138,129 @@ class Plotter:
 
         fig.show()
 
+    def plot_PCA_incremental(self, data_file, batch_size=65536) -> None:
+        """Displays an incremental PCA plot.
+
+        Displays an incremental PCA (principal component analysis) plot of the
+        dataset's embeddings using plotly. Use this when the dataset's size is
+        too large to fit in the memory.
+        """
+        categories = self.data["author"].unique()
+        valid_ids = self.data["id"].unique()
+
+        ipca = IncrementalPCA(n_components=3, batch_size=batch_size)
+
+        print("Starting PCA fitting process...")
+        embedding_columns = [f"embedding_{i}" for i in range(512)]
+
+        batch_count = sum(1 for _ in data_file.iter_batches(batch_size=batch_size))
+        for batch in tqdm(
+            data_file.iter_batches(batch_size=batch_size), total=batch_count, desc="Fitting the PCA"
+        ):
+            batch_df = batch.to_pandas()
+            batch_df = batch_df[batch_df["id"].isin(valid_ids)]
+            if batch_df.empty:
+                continue
+
+            batch_df[embedding_columns] = batch_df[embedding_columns].apply(
+                pd.to_numeric, errors="coerce"
+            )
+            embeddings = batch_df[embedding_columns].values
+            ipca.partial_fit(embeddings)
+
+        transformed = []
+        transformed_ids = []
+
+        print("PCA fitting finished. Starting PCA transformation process...")
+
+        for batch in tqdm(
+            data_file.iter_batches(batch_size=batch_size),
+            total=batch_count,
+            desc="Transforming the PCA",
+        ):
+            batch_df = batch.to_pandas()
+            batch_df = batch_df[batch_df["id"].isin(valid_ids)]
+            if batch_df.empty:
+                continue
+
+            batch_df[embedding_columns] = batch_df[embedding_columns].apply(
+                pd.to_numeric, errors="coerce"
+            )
+            embeddings = batch_df[embedding_columns].values
+            pca_embeddings = ipca.transform(embeddings)
+
+            transformed.append(pca_embeddings)
+            transformed_ids.extend(batch_df["id"].values)
+
+        transformed = np.vstack(transformed)
+        transformed_ids = np.array(transformed_ids)
+
+        explained_variance = ipca.explained_variance_ratio_
+        print(f"Explained variance by component: {explained_variance}")
+        print(f"Cumulative explained variance: {np.cumsum(explained_variance)}")
+
+        print("PCA transformation process complete. Preparing the plot...")
+
+        id_to_index = {id_: index for index, id_ in enumerate(transformed_ids)}
+
+        fig = go.Figure()
+
+        for i, category in enumerate(
+            tqdm(
+                categories, total=len(categories), desc="Constructing PCA graph"
+            )
+        ):
+            category_mask = self.data["author"] == category
+            category_ids = self.data[category_mask]["id"].values
+
+            category_indices = [
+                id_to_index[id_] for id_ in category_ids if id_ in id_to_index
+            ]
+            category_embeddings = transformed[category_indices]
+
+            fig.add_trace(
+                go.Scatter3d(
+                    x=category_embeddings[:, 0],
+                    y=category_embeddings[:, 1],
+                    z=category_embeddings[:, 2],
+                    mode="markers",
+                    marker=dict(
+                        size=5, color=i, colorscale="Viridis", opacity=0.8
+                    ),
+                    name=category,
+                )
+            )
+
+        fig.update_layout(
+            autosize=False,
+            title="3D Scatter Plot of Users",
+            width=1600,
+            height=1000,
+            scene=dict(
+                xaxis=dict(title="x"),
+                yaxis=dict(title="y"),
+                zaxis=dict(title="z"),
+            ),
+        )
+
+        fig.show()
+
 
 if __name__ == "__main__":
-    dataset = pd.read_parquet(DATASET_PATH)
-    dataset = prune_dataset(dataset, 100, 1000)
-    print("Parquet read")
+    print("Let's get started")
+    dataset = pd.read_parquet(DATASET_PATH, columns=["id", "author"])
+    print("Got the light dataset")
+    dataset_pq_file = pq.ParquetFile(DATASET_PATH)
+    print("Data successfully read")
+    dataset = balance_dataset(dataset, 1000)
+    # print("Parquet pruned")
     plotter = Plotter(dataset)
-    print("Plotter created")
-    plotter.plot_count_hist()
-    print("First plot done")
-    plotter.plot_count_CDF()
-    plotter.plot_count_threshold_sizes(
-        [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
-    )
-    plotter.plot_PCA()
+    # print("Plotter created")
+    # plotter.plot_count_hist()
+    # print("First plot done")
+    # plotter.plot_count_CDF()
+    # plotter.plot_count_threshold_sizes(
+    #     [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+    # )
+    print("Plotting PCA...")
+    plotter.plot_PCA_incremental(dataset_pq_file)
