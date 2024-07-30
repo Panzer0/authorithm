@@ -17,14 +17,14 @@ class Embedder:
          embedding model.
     """
 
-    def __init__(self, max_seq_length: int = None) -> None:
+    def __init__(self, max_seq_length: int = None, model = MODEL_NAME) -> None:
         """Inits Embedder.
 
         Args:
             data: The maximal sequence length to be accepted by the embedder.
              Inputs that exceed the limit will be truncated.
         """
-        self.model = SentenceTransformer(MODEL_NAME, trust_remote_code=True)
+        self.model = SentenceTransformer(model, trust_remote_code=True)
         if max_seq_length:
             self.model.max_seq_length = max_seq_length
 
