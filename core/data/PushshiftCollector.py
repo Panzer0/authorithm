@@ -60,7 +60,16 @@ class ParquetChunkWriter:
 
 
 class PushshiftCollector:
+    """Handles the management of a (.zst-compressed) Pushshift-obtained file,
+    focusing primarily on migrating it to a parquet file along with newly
+    generated embeddings.
+
+    Attributes:
+        embedder: An Embedder object responsible for embedding generation.
+    """
     def __init__(self) -> None:
+        """Inits PushshiftCollector.
+        """
         self.embedder = Embedder()
 
     def zst_to_parquet_with_embeddings(
