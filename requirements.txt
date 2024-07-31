@@ -128,7 +128,7 @@ tomlkit==0.12.4
 torch==2.2.1
 torchaudio==2.2.1
 torchvision==0.17.1
-tqdm==4.66.2
+tqdm==4.66.3
 transformers==4.39.1
 triton==2.2.0
 typer==0.12.1
