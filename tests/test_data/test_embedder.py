@@ -1,5 +1,5 @@
 import unittest
-from core.data.Embedder import Embedder
+from core.data.embedder import Embedder
 
 
 class TestEmbedder(unittest.TestCase):

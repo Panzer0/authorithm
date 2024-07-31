@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 from sklearn.decomposition import PCA, IncrementalPCA
 from tqdm import tqdm
 
-from core.data.Preprocessing import balance_dataset, prune_dataset
+from core.data.preprocessing import balance_dataset, prune_dataset
 import pyarrow.parquet as pq
 
 from core.config import DATASET_PATH

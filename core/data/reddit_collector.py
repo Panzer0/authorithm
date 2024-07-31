@@ -1,6 +1,6 @@
 import praw, prawcore
 import pandas as pd
-from core.data.Embedder import Embedder
+from core.data.embedder import Embedder
 
 from core.config import DATASET_PATH, SUBREDDIT_NAME
 

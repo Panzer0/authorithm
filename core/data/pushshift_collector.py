@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from core.data.Embedder import Embedder
+from core.data.embedder import Embedder
 import pyarrow as pa
 import pyarrow.parquet as pq
 from tqdm import tqdm
