@@ -1,4 +1,4 @@
-from core.data.RedditDataset import RedditDataset
+from core.data.reddit_dataset import RedditDataset
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 
