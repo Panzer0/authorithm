@@ -135,7 +135,7 @@ typer==0.12.1
 typing_extensions==4.10.0
 tzdata==2024.1
 update-checker==0.18.0
-urllib3==2.2.1
+urllib3==2.2.2
 vine==5.1.0
 voluptuous==0.14.2
 wcwidth==0.2.13
