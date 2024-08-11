@@ -94,7 +94,7 @@ class PCAGenerator:
             embeddings = batch_df[self.EMBEDDING_COLUMNS].values
             self.ipca.partial_fit(embeddings)
 
-    def transform(self):
+    def transform(self) -> (np.ndarray, np.ndarray):
         """
         Transforms the dataset using the fitted model by iterating over it batch
         by batch.
@@ -148,7 +148,14 @@ class PCAGenerator:
         """
         return np.cumsum(self.get_explained_variance())
 
-    def generate_pca(self):
+    def generate_pca(self) -> (np.ndarray, np.ndarray):
+        """Fits the model and transforms the dataset.
+
+        Returns:
+            tuple:
+                - np.ndarray: An array of transformed PCA components.
+                - np.ndarray: An array of corresponding IDs for the components.
+        """
         self.fit()
         return self.transform()
 
