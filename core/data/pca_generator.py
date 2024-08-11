@@ -46,7 +46,12 @@ class PCAGenerator:
         """
         return self.data_file.iter_batches(batch_size=self.batch_size)
 
-    def _get_batch_count(self):
+    def _get_batch_count(self) -> int:
+        """Counts the number of batches in the dataset.
+
+        Returns:
+            int: The total number of batches in the dataset.
+        """
         return sum(1 for _ in self._get_batches())
 
     def _parse_batch(self, batch):
