@@ -19,20 +19,17 @@ class PCAGenerator:
     def _get_batches(self):
         return self.data_file.iter_batches(batch_size=self.batch_size)
 
-    def generate_PCA_incremental(self):
-        valid_ids = self.get_valid_ids()
-
-        print("Starting PCA fitting process...")
+    def fit(self):
         embedding_columns = [f"embedding_{i}" for i in range(512)]
-
         batch_count = sum(1 for _ in self._get_batches())
+
         for batch in tqdm(
             self.data_file.iter_batches(batch_size=self.batch_size),
             total=batch_count,
             desc="Fitting the PCA",
         ):
             batch_df = batch.to_pandas()
-            batch_df = batch_df[batch_df["id"].isin(valid_ids)]
+            batch_df = batch_df[batch_df["id"].isin(self.get_valid_ids())]
             if batch_df.empty:
                 continue
 
@@ -42,18 +39,19 @@ class PCAGenerator:
             embeddings = batch_df[embedding_columns].values
             self.ipca.partial_fit(embeddings)
 
+    def transform(self):
         transformed = []
         transformed_ids = []
-
-        print("PCA fitting finished. Starting PCA transformation process...")
+        batch_count = sum(1 for _ in self._get_batches())
+        embedding_columns = [f"embedding_{i}" for i in range(512)]
 
         for batch in tqdm(
-            self._get_batches(),
-            total=batch_count,
-            desc="Transforming the PCA",
+                self._get_batches(),
+                total=batch_count,
+                desc="Transforming the PCA",
         ):
             batch_df = batch.to_pandas()
-            batch_df = batch_df[batch_df["id"].isin(valid_ids)]
+            batch_df = batch_df[batch_df["id"].isin(self.get_valid_ids())]
             if batch_df.empty:
                 continue
 
@@ -77,6 +75,10 @@ class PCAGenerator:
         print(transformed_ids[0])
 
         return transformed, transformed_ids
+
+    def generate_PCA_incremental(self):
+        self.fit()
+        return self.transform()
 
     def get_valid_categories(self):
         return self.data_mask["author"].unique()
