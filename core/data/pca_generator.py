@@ -137,7 +137,15 @@ class PCAGenerator:
         """
         return self.ipca.explained_variance_ratio_
 
-    def get_cumulative_explained_variance(self):
+    def get_cumulative_explained_variance(self) -> np.ndarray:
+        """
+        Returns the cumulative explained variance ratio of each principal
+        component.
+
+        Returns:
+            np.ndarray: An array containin the cumulative explained variance
+            ratio for each component.
+        """
         return np.cumsum(self.get_explained_variance())
 
     def generate_pca(self):
