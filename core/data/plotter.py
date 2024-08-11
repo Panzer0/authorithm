@@ -139,8 +139,9 @@ class Plotter:
 
         fig.show()
 
-    def plot_PCA_incremental(self, transformed, transformed_ids, categories) -> None:
-        """Displays an incremental PCA plot.
+    def plot_PCA_incremental(self, transformed, transformed_ids, categories=None) -> None:
+        """Displays an incremental PCA plot with the assumption that it's built
+        on self.data.
 
         Displays an incremental PCA (principal component analysis) plot of the
         dataset's embeddings using plotly. Use this when the dataset's size is
@@ -152,6 +153,9 @@ class Plotter:
                 contained in transformed
             categories: The unique usernames that make up the data
         """
+        if categories is None:
+            categories = self.data["author"].unique()
+
         id_to_index = {id_: index for index, id_ in enumerate(transformed_ids)}
 
         fig = go.Figure()
