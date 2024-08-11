@@ -128,7 +128,13 @@ class PCAGenerator:
 
         return transformed, transformed_ids
 
-    def get_explained_variance(self):
+    def get_explained_variance(self) -> np.ndarray:
+        """Returns the explained variance ratio of each principal component.
+
+        Returns:
+             np.ndarray: An array containing the explained variance ratio for
+             each component.
+        """
         return self.ipca.explained_variance_ratio_
 
     def get_cumulative_explained_variance(self):
