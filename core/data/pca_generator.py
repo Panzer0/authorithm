@@ -12,14 +12,15 @@ class PCAGenerator:
     """Performs incremental PCA on a dataset.
 
         Attributes:
-        EMBEDDING_COLUMNS : List of names of coumns under which the embeddings
-            are stored in the dataset.
-        data_mask : A dataframe containing a minimal subset (containing only
-            comment ids and author names) of the dataset balanced around its
-            author parameter.
-        data_file : A ParquetFile object to handle batch reading of the dataset.
-        batch_size : The number of samples to process in each batch.
-        ipca : The IncrementalPCA object used for dimensionality reduction.
+            EMBEDDING_COLUMNS: List of names of coumns under which the
+                embeddings are stored in the dataset.
+            data_mask: A dataframe containing a minimal subset (containing only
+                comment ids and author names) of the dataset balanced around its
+                author parameter.
+            data_file: A ParquetFile object to handle batch reading of the
+                dataset.
+            batch_size: The number of samples to process in each batch.
+            ipca: The IncrementalPCA object used for dimensionality reduction.
         """
     EMBEDDING_COLUMNS = [f"embedding_{i}" for i in range(512)]
 
@@ -27,8 +28,8 @@ class PCAGenerator:
         """Inits PCAGenerator.
 
         Args:
-            dataset_path : The path to the dataset file.
-            batch_size : The number of samples to process in each batch.
+            dataset_path: The path to the dataset file.
+            batch_size: The number of samples to process in each batch.
         """
         self.data_mask = pd.read_parquet(dataset_path, columns=["id", "author"])
         self.data_mask = balance_dataset(self.data_mask, 1000)
@@ -37,6 +38,12 @@ class PCAGenerator:
         self.ipca = IncrementalPCA(n_components=3, batch_size=batch_size)
 
     def _get_batches(self):
+        """Returns an iterator over the batches of data from self.data_file.
+
+        Returns:
+            iterator: An iterator that yields batches of data from
+                self.data_file of size self.batch_size.
+        """
         return self.data_file.iter_batches(batch_size=self.batch_size)
 
     def _get_batch_count(self):
