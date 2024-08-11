@@ -24,7 +24,7 @@ class PCAGenerator:
     def _get_batch_count(self):
         return sum(1 for _ in self._get_batches())
 
-    def parse_batch(self, batch):
+    def _parse_batch(self, batch):
         batch_df = batch.to_pandas()
         batch_df = batch_df[batch_df["id"].isin(self.get_valid_ids())]
         if batch_df.empty:
@@ -43,7 +43,7 @@ class PCAGenerator:
                 total=batch_count,
                 desc="Fitting the PCA",
         ):
-            batch_df = self.parse_batch(batch)
+            batch_df = self._parse_batch(batch)
             if batch_df.empty:
                 continue
 
@@ -60,7 +60,7 @@ class PCAGenerator:
                 total=batch_count,
                 desc="Transforming the PCA",
         ):
-            batch_df = self.parse_batch(batch)
+            batch_df = self._parse_batch(batch)
             if batch_df.empty:
                 continue
 
