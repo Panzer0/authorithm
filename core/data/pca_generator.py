@@ -7,8 +7,9 @@ from core.data.preprocessing import balance_dataset
 from sklearn.decomposition import IncrementalPCA
 import pyarrow.parquet as pq
 
+
 class PCAGenerator:
-    def __init__(self, dataset_path = DATASET_PATH, batch_size = 65536):
+    def __init__(self, dataset_path=DATASET_PATH, batch_size=65536):
         self.data_mask = pd.read_parquet(dataset_path, columns=["id", "author"])
         self.data_mask = balance_dataset(self.data_mask, 1000)
         self.data_file = pq.ParquetFile(DATASET_PATH)
@@ -17,6 +18,7 @@ class PCAGenerator:
 
     def _get_batches(self):
         return self.data_file.iter_batches(batch_size=self.batch_size)
+
     def generate_PCA_incremental(self):
         valid_ids = self.get_valid_ids()
 
@@ -25,8 +27,9 @@ class PCAGenerator:
 
         batch_count = sum(1 for _ in self._get_batches())
         for batch in tqdm(
-                self.data_file.iter_batches(batch_size=self.batch_size),
-                total=batch_count, desc="Fitting the PCA"
+            self.data_file.iter_batches(batch_size=self.batch_size),
+            total=batch_count,
+            desc="Fitting the PCA",
         ):
             batch_df = batch.to_pandas()
             batch_df = batch_df[batch_df["id"].isin(valid_ids)]
@@ -45,9 +48,9 @@ class PCAGenerator:
         print("PCA fitting finished. Starting PCA transformation process...")
 
         for batch in tqdm(
-                self._get_batches(),
-                total=batch_count,
-                desc="Transforming the PCA",
+            self._get_batches(),
+            total=batch_count,
+            desc="Transforming the PCA",
         ):
             batch_df = batch.to_pandas()
             batch_df = batch_df[batch_df["id"].isin(valid_ids)]
@@ -80,4 +83,3 @@ class PCAGenerator:
 
     def get_valid_ids(self):
         return self.data_mask["id"].unique()
-

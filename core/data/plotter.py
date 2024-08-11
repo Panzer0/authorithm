@@ -139,7 +139,9 @@ class Plotter:
 
         fig.show()
 
-    def plot_PCA_incremental(self, transformed, transformed_ids, categories=None) -> None:
+    def plot_PCA_incremental(
+        self, transformed, transformed_ids, categories=None
+    ) -> None:
         """Displays an incremental PCA plot with the assumption that it's built
         on self.data.
 
