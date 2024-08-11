@@ -169,4 +169,9 @@ class PCAGenerator:
         return self.data_mask["author"].unique()
 
     def get_valid_ids(self):
+        """Returns the ids of the comments belonging to the balanced dataset.
+
+        Returns:
+            np.ndarray: An array of ids belonging to the balanced dataset.
+        """
         return self.data_mask["id"].unique()
