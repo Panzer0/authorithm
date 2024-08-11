@@ -9,6 +9,8 @@ import pyarrow.parquet as pq
 
 
 class PCAGenerator:
+    EMBEDDING_COLUMNS = [f"embedding_{i}" for i in range(512)]
+
     def __init__(self, dataset_path=DATASET_PATH, batch_size=65536):
         self.data_mask = pd.read_parquet(dataset_path, columns=["id", "author"])
         self.data_mask = balance_dataset(self.data_mask, 1000)
@@ -19,19 +21,18 @@ class PCAGenerator:
     def _get_batches(self):
         return self.data_file.iter_batches(batch_size=self.batch_size)
 
-    def parse_batch(self, batch, embedding_columns):
+    def parse_batch(self, batch):
         batch_df = batch.to_pandas()
         batch_df = batch_df[batch_df["id"].isin(self.get_valid_ids())]
         if batch_df.empty:
             return batch_df
 
-        batch_df[embedding_columns] = batch_df[embedding_columns].apply(
-            pd.to_numeric, errors="coerce"
-        )
+        batch_df[self.EMBEDDING_COLUMNS] = batch_df[
+            self.EMBEDDING_COLUMNS
+        ].apply(pd.to_numeric, errors="coerce")
         return batch_df
 
     def fit(self):
-        embedding_columns = [f"embedding_{i}" for i in range(512)]
         batch_count = sum(1 for _ in self._get_batches())
 
         for batch in tqdm(
@@ -39,29 +40,28 @@ class PCAGenerator:
             total=batch_count,
             desc="Fitting the PCA",
         ):
-            batch_df = self.parse_batch(batch, embedding_columns)
+            batch_df = self.parse_batch(batch)
             if batch_df.empty:
                 continue
 
-            embeddings = batch_df[embedding_columns].values
+            embeddings = batch_df[self.EMBEDDING_COLUMNS].values
             self.ipca.partial_fit(embeddings)
 
     def transform(self):
         transformed = []
         transformed_ids = []
         batch_count = sum(1 for _ in self._get_batches())
-        embedding_columns = [f"embedding_{i}" for i in range(512)]
 
         for batch in tqdm(
             self._get_batches(),
             total=batch_count,
             desc="Transforming the PCA",
         ):
-            batch_df = self.parse_batch(batch, embedding_columns)
+            batch_df = self.parse_batch(batch)
             if batch_df.empty:
                 continue
 
-            embeddings = batch_df[embedding_columns].values
+            embeddings = batch_df[self.EMBEDDING_COLUMNS].values
             pca_embeddings = self.ipca.transform(embeddings)
 
             transformed.append(pca_embeddings)
