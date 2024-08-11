@@ -76,7 +76,7 @@ class PCAGenerator:
 
         return transformed, transformed_ids
 
-    def generate_PCA_incremental(self):
+    def generate_pca(self):
         self.fit()
         return self.transform()
 
