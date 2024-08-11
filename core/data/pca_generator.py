@@ -54,7 +54,20 @@ class PCAGenerator:
         """
         return sum(1 for _ in self._get_batches())
 
-    def _parse_batch(self, batch):
+    def _parse_batch(self, batch) -> pd.DataFrame:
+        """Parses a single batch of data.
+
+        Converts the given batch to a dataframe consisting only of entries
+        whose id parameter belongs to the normalised subset of the dataset and
+        ensures its embedding columns are entirely numeric.
+
+        Args:
+        batch : A batch of data from the Parquet file.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing only the valid rows with
+                numeric embeddings.
+        """
         batch_df = batch.to_pandas()
         batch_df = batch_df[batch_df["id"].isin(self.get_valid_ids())]
         if batch_df.empty:
