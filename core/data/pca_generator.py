@@ -24,7 +24,7 @@ class PCAGenerator:
         batch_count = sum(1 for _ in self._get_batches())
 
         for batch in tqdm(
-            self.data_file.iter_batches(batch_size=self.batch_size),
+            self._get_batches(),
             total=batch_count,
             desc="Fitting the PCA",
         ):
@@ -46,9 +46,9 @@ class PCAGenerator:
         embedding_columns = [f"embedding_{i}" for i in range(512)]
 
         for batch in tqdm(
-                self._get_batches(),
-                total=batch_count,
-                desc="Transforming the PCA",
+            self._get_batches(),
+            total=batch_count,
+            desc="Transforming the PCA",
         ):
             batch_df = batch.to_pandas()
             batch_df = batch_df[batch_df["id"].isin(self.get_valid_ids())]
@@ -66,9 +66,6 @@ class PCAGenerator:
 
         transformed = np.vstack(transformed)
         transformed_ids = np.array(transformed_ids)
-
-        print(transformed[0])
-        print(transformed_ids[0])
 
         return transformed, transformed_ids
 
