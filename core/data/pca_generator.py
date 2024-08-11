@@ -67,14 +67,16 @@ class PCAGenerator:
         transformed = np.vstack(transformed)
         transformed_ids = np.array(transformed_ids)
 
-        explained_variance = self.ipca.explained_variance_ratio_
-        print(f"Explained variance by component: {explained_variance}")
-        print(f"Cumulative explained variance: {np.cumsum(explained_variance)}")
-
         print(transformed[0])
         print(transformed_ids[0])
 
         return transformed, transformed_ids
+
+    def get_explained_variance(self):
+        return self.ipca.explained_variance_ratio_
+
+    def get_cumulative_explained_variance(self):
+        return np.cumsum(self.get_explained_variance())
 
     def generate_pca(self):
         self.fit()
