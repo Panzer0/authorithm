@@ -15,14 +15,15 @@ class PCAGenerator:
         self.batch_size = batch_size
         self.ipca = IncrementalPCA(n_components=3, batch_size=batch_size)
 
+    def _get_batches(self):
+        return self.data_file.iter_batches(batch_size=self.batch_size)
     def generate_PCA_incremental(self):
         valid_ids = self.get_valid_ids()
 
         print("Starting PCA fitting process...")
         embedding_columns = [f"embedding_{i}" for i in range(512)]
 
-        batch_count = sum(
-            1 for _ in self.data_file.iter_batches(batch_size=self.batch_size))
+        batch_count = sum(1 for _ in self._get_batches())
         for batch in tqdm(
                 self.data_file.iter_batches(batch_size=self.batch_size),
                 total=batch_count, desc="Fitting the PCA"
@@ -44,7 +45,7 @@ class PCAGenerator:
         print("PCA fitting finished. Starting PCA transformation process...")
 
         for batch in tqdm(
-                self.data_file.iter_batches(batch_size=self.batch_size),
+                self._get_batches(),
                 total=batch_count,
                 desc="Transforming the PCA",
         ):
