@@ -8,7 +8,7 @@ from sklearn.decomposition import IncrementalPCA
 import pyarrow.parquet as pq
 
 
-class PCAGenerator:
+class PCAHandler:
     """Performs incremental PCA on a dataset.
 
         Attributes:
