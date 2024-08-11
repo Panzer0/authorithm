@@ -138,24 +138,24 @@ class Plotter:
 
         fig.show()
 
-    def plot_PCA_incremental(self, data_file, batch_size=65536) -> None:
-        """Displays an incremental PCA plot.
+    def generate_PCA_incremental(self, dataset_path=DATASET_PATH, batch_size=65536):
+        data = pd.read_parquet(dataset_path, columns=["id", "author"])
+        data = balance_dataset(data, 1000)
+        data_file = pq.ParquetFile(DATASET_PATH)
 
-        Displays an incremental PCA (principal component analysis) plot of the
-        dataset's embeddings using plotly. Use this when the dataset's size is
-        too large to fit in the memory.
-        """
-        categories = self.data["author"].unique()
-        valid_ids = self.data["id"].unique()
+        categories = data["author"].unique()
+        valid_ids = data["id"].unique()
 
         ipca = IncrementalPCA(n_components=3, batch_size=batch_size)
 
         print("Starting PCA fitting process...")
         embedding_columns = [f"embedding_{i}" for i in range(512)]
 
-        batch_count = sum(1 for _ in data_file.iter_batches(batch_size=batch_size))
+        batch_count = sum(
+            1 for _ in data_file.iter_batches(batch_size=batch_size))
         for batch in tqdm(
-            data_file.iter_batches(batch_size=batch_size), total=batch_count, desc="Fitting the PCA"
+                data_file.iter_batches(batch_size=batch_size),
+                total=batch_count, desc="Fitting the PCA"
         ):
             batch_df = batch.to_pandas()
             batch_df = batch_df[batch_df["id"].isin(valid_ids)]
@@ -174,9 +174,9 @@ class Plotter:
         print("PCA fitting finished. Starting PCA transformation process...")
 
         for batch in tqdm(
-            data_file.iter_batches(batch_size=batch_size),
-            total=batch_count,
-            desc="Transforming the PCA",
+                data_file.iter_batches(batch_size=batch_size),
+                total=batch_count,
+                desc="Transforming the PCA",
         ):
             batch_df = batch.to_pandas()
             batch_df = batch_df[batch_df["id"].isin(valid_ids)]
@@ -199,7 +199,19 @@ class Plotter:
         print(f"Explained variance by component: {explained_variance}")
         print(f"Cumulative explained variance: {np.cumsum(explained_variance)}")
 
-        print("PCA transformation process complete. Preparing the plot...")
+        print(transformed[0])
+        print(transformed_ids[0])
+
+        return transformed, transformed_ids, categories
+
+    def plot_PCA_incremental(self, data_path=DATASET_PATH, batch_size=65536) -> None:
+        """Displays an incremental PCA plot.
+
+        Displays an incremental PCA (principal component analysis) plot of the
+        dataset's embeddings using plotly. Use this when the dataset's size is
+        too large to fit in the memory.
+        """
+        transformed, transformed_ids, categories = self.generate_PCA_incremental(data_path, batch_size)
 
         id_to_index = {id_: index for index, id_ in enumerate(transformed_ids)}
 
@@ -263,4 +275,5 @@ if __name__ == "__main__":
     #     [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
     # )
     print("Plotting PCA...")
-    plotter.plot_PCA_incremental(dataset_pq_file)
+    # plotter.plot_PCA_incremental(dataset_pq_file)
+    plotter.plot_PCA_incremental()
