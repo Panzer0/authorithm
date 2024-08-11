@@ -139,19 +139,20 @@ class Plotter:
 
         fig.show()
 
-    def plot_PCA_incremental(self, data_path=DATASET_PATH, batch_size=65536) -> None:
+    def plot_PCA_incremental(self, transformed, transformed_ids, categories) -> None:
         """Displays an incremental PCA plot.
 
         Displays an incremental PCA (principal component analysis) plot of the
         dataset's embeddings using plotly. Use this when the dataset's size is
         too large to fit in the memory.
+
+        Args:
+            transformed: A list of PCA-transformed embeddings.
+            transformed_ids: A list of IDs corresponding to the embeddings
+                contained in transformed
+            categories: The unique usernames that make up the data
         """
-        pca_generator = PCAGenerator(dataset_path=data_path, batch_size=batch_size)
-
-        transformed, transformed_ids = pca_generator.generate_PCA_incremental()
-
         id_to_index = {id_: index for index, id_ in enumerate(transformed_ids)}
-        categories = pca_generator.get_valid_categories()
 
         fig = go.Figure()
         for i, category in enumerate(
@@ -213,4 +214,7 @@ if __name__ == "__main__":
     # )
     print("Plotting PCA...")
     # plotter.plot_PCA_incremental(dataset_pq_file)
-    plotter.plot_PCA_incremental()
+    pca_generator = PCAGenerator(DATASET_PATH)
+    transformed, transformed_ids = PCAGenerator
+    categories = pca_generator.get_valid_categories()
+    plotter.plot_PCA_incremental(transformed, transformed_ids, categories)
