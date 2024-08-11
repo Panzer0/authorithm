@@ -160,6 +160,12 @@ class PCAGenerator:
         return self.transform()
 
     def get_valid_categories(self):
+        """Returns the unique authors belonging to the balanced dataset.
+
+        Returns:
+            np.ndarray: An array containing unique authors from the balanced
+            dataset.
+        """
         return self.data_mask["author"].unique()
 
     def get_valid_ids(self):
