@@ -159,7 +159,7 @@ class PCAGenerator:
         self.fit()
         return self.transform()
 
-    def get_valid_categories(self):
+    def get_valid_categories(self) -> np.ndarray:
         """Returns the unique authors belonging to the balanced dataset.
 
         Returns:
@@ -168,7 +168,7 @@ class PCAGenerator:
         """
         return self.data_mask["author"].unique()
 
-    def get_valid_ids(self):
+    def get_valid_ids(self) -> np.ndarray:
         """Returns the ids of the comments belonging to the balanced dataset.
 
         Returns:
