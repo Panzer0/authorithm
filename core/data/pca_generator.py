@@ -19,6 +19,17 @@ class PCAGenerator:
     def _get_batches(self):
         return self.data_file.iter_batches(batch_size=self.batch_size)
 
+    def parse_batch(self, batch, embedding_columns):
+        batch_df = batch.to_pandas()
+        batch_df = batch_df[batch_df["id"].isin(self.get_valid_ids())]
+        if batch_df.empty:
+            return batch_df
+
+        batch_df[embedding_columns] = batch_df[embedding_columns].apply(
+            pd.to_numeric, errors="coerce"
+        )
+        return batch_df
+
     def fit(self):
         embedding_columns = [f"embedding_{i}" for i in range(512)]
         batch_count = sum(1 for _ in self._get_batches())
@@ -28,14 +39,10 @@ class PCAGenerator:
             total=batch_count,
             desc="Fitting the PCA",
         ):
-            batch_df = batch.to_pandas()
-            batch_df = batch_df[batch_df["id"].isin(self.get_valid_ids())]
+            batch_df = self.parse_batch(batch, embedding_columns)
             if batch_df.empty:
                 continue
 
-            batch_df[embedding_columns] = batch_df[embedding_columns].apply(
-                pd.to_numeric, errors="coerce"
-            )
             embeddings = batch_df[embedding_columns].values
             self.ipca.partial_fit(embeddings)
 
@@ -50,14 +57,10 @@ class PCAGenerator:
             total=batch_count,
             desc="Transforming the PCA",
         ):
-            batch_df = batch.to_pandas()
-            batch_df = batch_df[batch_df["id"].isin(self.get_valid_ids())]
+            batch_df = self.parse_batch(batch, embedding_columns)
             if batch_df.empty:
                 continue
 
-            batch_df[embedding_columns] = batch_df[embedding_columns].apply(
-                pd.to_numeric, errors="coerce"
-            )
             embeddings = batch_df[embedding_columns].values
             pca_embeddings = self.ipca.transform(embeddings)
 
