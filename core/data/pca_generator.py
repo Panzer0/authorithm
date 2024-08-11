@@ -78,7 +78,8 @@ class PCAGenerator:
         ].apply(pd.to_numeric, errors="coerce")
         return batch_df
 
-    def fit(self):
+    def fit(self) -> None:
+        """Fits the model on the dataset by iterating over it batch by batch."""
         batch_count = self._get_batch_count()
 
         for batch in tqdm(
