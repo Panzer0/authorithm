@@ -95,6 +95,15 @@ class PCAGenerator:
             self.ipca.partial_fit(embeddings)
 
     def transform(self):
+        """
+        Transforms the dataset using the fitted model by iterating over it batch
+        by batch.
+
+        Returns:
+            tuple:
+                - np.ndarray: An array of transformed PCA components.
+                - np.ndarray: An array of corresponding IDs for the components.
+        """
         transformed = []
         transformed_ids = []
         batch_count = self._get_batch_count()
