@@ -6,6 +6,7 @@ import plotly.graph_objs as go
 from sklearn.decomposition import PCA, IncrementalPCA
 from tqdm import tqdm
 
+from core.data.pca_generator import PCAGenerator
 from core.data.preprocessing import balance_dataset, prune_dataset
 import pyarrow.parquet as pq
 
@@ -138,72 +139,6 @@ class Plotter:
 
         fig.show()
 
-    def generate_PCA_incremental(self, dataset_path=DATASET_PATH, batch_size=65536):
-        data = pd.read_parquet(dataset_path, columns=["id", "author"])
-        data = balance_dataset(data, 1000)
-        data_file = pq.ParquetFile(DATASET_PATH)
-
-        categories = data["author"].unique()
-        valid_ids = data["id"].unique()
-
-        ipca = IncrementalPCA(n_components=3, batch_size=batch_size)
-
-        print("Starting PCA fitting process...")
-        embedding_columns = [f"embedding_{i}" for i in range(512)]
-
-        batch_count = sum(
-            1 for _ in data_file.iter_batches(batch_size=batch_size))
-        for batch in tqdm(
-                data_file.iter_batches(batch_size=batch_size),
-                total=batch_count, desc="Fitting the PCA"
-        ):
-            batch_df = batch.to_pandas()
-            batch_df = batch_df[batch_df["id"].isin(valid_ids)]
-            if batch_df.empty:
-                continue
-
-            batch_df[embedding_columns] = batch_df[embedding_columns].apply(
-                pd.to_numeric, errors="coerce"
-            )
-            embeddings = batch_df[embedding_columns].values
-            ipca.partial_fit(embeddings)
-
-        transformed = []
-        transformed_ids = []
-
-        print("PCA fitting finished. Starting PCA transformation process...")
-
-        for batch in tqdm(
-                data_file.iter_batches(batch_size=batch_size),
-                total=batch_count,
-                desc="Transforming the PCA",
-        ):
-            batch_df = batch.to_pandas()
-            batch_df = batch_df[batch_df["id"].isin(valid_ids)]
-            if batch_df.empty:
-                continue
-
-            batch_df[embedding_columns] = batch_df[embedding_columns].apply(
-                pd.to_numeric, errors="coerce"
-            )
-            embeddings = batch_df[embedding_columns].values
-            pca_embeddings = ipca.transform(embeddings)
-
-            transformed.append(pca_embeddings)
-            transformed_ids.extend(batch_df["id"].values)
-
-        transformed = np.vstack(transformed)
-        transformed_ids = np.array(transformed_ids)
-
-        explained_variance = ipca.explained_variance_ratio_
-        print(f"Explained variance by component: {explained_variance}")
-        print(f"Cumulative explained variance: {np.cumsum(explained_variance)}")
-
-        print(transformed[0])
-        print(transformed_ids[0])
-
-        return transformed, transformed_ids, categories
-
     def plot_PCA_incremental(self, data_path=DATASET_PATH, batch_size=65536) -> None:
         """Displays an incremental PCA plot.
 
@@ -211,12 +146,14 @@ class Plotter:
         dataset's embeddings using plotly. Use this when the dataset's size is
         too large to fit in the memory.
         """
-        transformed, transformed_ids, categories = self.generate_PCA_incremental(data_path, batch_size)
+        pca_generator = PCAGenerator(dataset_path=data_path, batch_size=batch_size)
+
+        transformed, transformed_ids = pca_generator.generate_PCA_incremental()
 
         id_to_index = {id_: index for index, id_ in enumerate(transformed_ids)}
+        categories = pca_generator.get_valid_categories()
 
         fig = go.Figure()
-
         for i, category in enumerate(
             tqdm(
                 categories, total=len(categories), desc="Constructing PCA graph"
