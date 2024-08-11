@@ -21,6 +21,9 @@ class PCAGenerator:
     def _get_batches(self):
         return self.data_file.iter_batches(batch_size=self.batch_size)
 
+    def _get_batch_count(self):
+        return sum(1 for _ in self._get_batches())
+
     def parse_batch(self, batch):
         batch_df = batch.to_pandas()
         batch_df = batch_df[batch_df["id"].isin(self.get_valid_ids())]
@@ -33,12 +36,12 @@ class PCAGenerator:
         return batch_df
 
     def fit(self):
-        batch_count = sum(1 for _ in self._get_batches())
+        batch_count = self._get_batch_count()
 
         for batch in tqdm(
-            self._get_batches(),
-            total=batch_count,
-            desc="Fitting the PCA",
+                self._get_batches(),
+                total=batch_count,
+                desc="Fitting the PCA",
         ):
             batch_df = self.parse_batch(batch)
             if batch_df.empty:
@@ -50,12 +53,12 @@ class PCAGenerator:
     def transform(self):
         transformed = []
         transformed_ids = []
-        batch_count = sum(1 for _ in self._get_batches())
+        batch_count = self._get_batch_count()
 
         for batch in tqdm(
-            self._get_batches(),
-            total=batch_count,
-            desc="Transforming the PCA",
+                self._get_batches(),
+                total=batch_count,
+                desc="Transforming the PCA",
         ):
             batch_df = self.parse_batch(batch)
             if batch_df.empty:
