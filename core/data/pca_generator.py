@@ -9,8 +9,7 @@ import pyarrow.parquet as pq
 
 
 class PCAGenerator:
-    """
-        Performs Incremental PCA on a dataset.
+    """Performs incremental PCA on a dataset.
 
         Attributes:
         EMBEDDING_COLUMNS : List of names of coumns under which the embeddings
@@ -24,7 +23,13 @@ class PCAGenerator:
         """
     EMBEDDING_COLUMNS = [f"embedding_{i}" for i in range(512)]
 
-    def __init__(self, dataset_path=DATASET_PATH, batch_size=65536):
+    def __init__(self, dataset_path=DATASET_PATH, batch_size=65536) -> None:
+        """Inits PCAGenerator.
+
+        Args:
+            dataset_path : The path to the dataset file.
+            batch_size : The number of samples to process in each batch.
+        """
         self.data_mask = pd.read_parquet(dataset_path, columns=["id", "author"])
         self.data_mask = balance_dataset(self.data_mask, 1000)
         self.data_file = pq.ParquetFile(DATASET_PATH)
