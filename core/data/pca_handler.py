@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from core.config import DATASET_PATH
+from core.config import DATASET_PATH, DATASET_PCA_PATH
 from core.data.preprocessing import balance_dataset
 from sklearn.decomposition import IncrementalPCA
 import pyarrow.parquet as pq
@@ -12,7 +12,7 @@ class PCAHandler:
     """Performs incremental PCA on a dataset.
 
     Attributes:
-        EMBEDDING_COLUMNS: List of names of coumns under which the
+        EMBEDDING_COLUMNS: List of names of columns under which the
             embeddings are stored in the dataset.
         data_mask: A dataframe containing a minimal subset (containing only
             comment ids and author names) of the dataset balanced around its
@@ -165,6 +165,33 @@ class PCAHandler:
         """
         self.fit()
         return self.transform()
+
+    @staticmethod
+    def to_parquet(
+        pca: np.ndarray,
+        ids: np.ndarray,
+        authors: np.ndarray,
+        path: str = DATASET_PCA_PATH,
+    ) -> None:
+        """Stores the provided products of transform() to a Parquet file.
+
+        Args:
+            pca: An array of the PCA components.
+            ids: An array of the IDs for the components.
+            authors: An array of corresponding authors for the components
+            path: The path of the Parquet file to write to.
+        """
+        pca_x = pca[:, 0]
+        pca_y = pca[:, 1]
+        pca_z = pca[:, 2]
+        data = {
+            "pca_x": pca_x,
+            "pca_y": pca_y,
+            "pca_z": pca_z,
+            "author": authors,
+        }
+        df = pd.DataFrame(data, index=ids)
+        df.to_parquet(path, compression="gzip")
 
     def get_valid_categories(self) -> np.ndarray:
         """Returns the unique authors belonging to the balanced dataset.
