@@ -10,6 +10,8 @@ DATASET_FILENAME = f"dataset_{SUBREDDIT_NAME}_large_experimental.parquet.gzip"
 
 # The default dataset's path
 DATASET_PATH = f"datasets/{DATASET_FILENAME}"
+# The default PCA-transformed dataset's path
+DATASET_PCA_PATH = f"datasets/pca/{DATASET_FILENAME}"
 
 
 ## PushshiftCollector-related values
