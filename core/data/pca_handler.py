@@ -94,7 +94,7 @@ class PCAHandler:
             embeddings = batch_df[self.EMBEDDING_COLUMNS].values
             self.ipca.partial_fit(embeddings)
 
-    def transform(self) -> (np.ndarray, np.ndarray):
+    def transform(self) -> (np.ndarray, np.ndarray, np.ndarray):
         """
         Transforms the dataset using the fitted model by iterating over it batch
         by batch.
@@ -103,9 +103,12 @@ class PCAHandler:
             tuple:
                 - np.ndarray: An array of transformed PCA components.
                 - np.ndarray: An array of corresponding IDs for the components.
+                - np.ndarray: An array of corresponding authors for the
+                    components.
         """
         transformed = []
         transformed_ids = []
+        transformed_accounts = []
         batch_count = self._get_batch_count()
 
         for batch in tqdm(
@@ -122,11 +125,12 @@ class PCAHandler:
 
             transformed.append(pca_embeddings)
             transformed_ids.extend(batch_df["id"].values)
+            transformed_accounts.extend(batch_df["author"].values)
 
         transformed = np.vstack(transformed)
         transformed_ids = np.array(transformed_ids)
 
-        return transformed, transformed_ids
+        return transformed, transformed_ids, transformed_accounts
 
     def get_explained_variance(self) -> np.ndarray:
         """Returns the explained variance ratio of each principal component.
@@ -148,13 +152,15 @@ class PCAHandler:
         """
         return np.cumsum(self.get_explained_variance())
 
-    def generate_pca(self) -> (np.ndarray, np.ndarray):
+    def generate_pca(self) -> (np.ndarray, np.ndarray, np.ndarray):
         """Fits the model and transforms the dataset.
 
         Returns:
             tuple:
                 - np.ndarray: An array of transformed PCA components.
                 - np.ndarray: An array of corresponding IDs for the components.
+                - np.ndarray: An array of corresponding authors for the
+                    components.
         """
         self.fit()
         return self.transform()

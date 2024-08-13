@@ -221,6 +221,6 @@ if __name__ == "__main__":
     print("Plotting PCA...")
     # plotter.plot_PCA_incremental(dataset_pq_file)
     pca_generator = PCAHandler(DATASET_PATH)
-    transformed, transformed_ids = pca_generator.generate_pca()
+    transformed, transformed_ids, _ = pca_generator.generate_pca()
     categories = pca_generator.get_valid_categories()
     plotter.plot_PCA_incremental(transformed, transformed_ids, categories)
