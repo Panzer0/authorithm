@@ -11,17 +11,18 @@ import pyarrow.parquet as pq
 class PCAHandler:
     """Performs incremental PCA on a dataset.
 
-        Attributes:
-            EMBEDDING_COLUMNS: List of names of coumns under which the
-                embeddings are stored in the dataset.
-            data_mask: A dataframe containing a minimal subset (containing only
-                comment ids and author names) of the dataset balanced around its
-                author parameter.
-            data_file: A ParquetFile object to handle batch reading of the
-                dataset.
-            batch_size: The number of samples to process in each batch.
-            ipca: The IncrementalPCA object used for dimensionality reduction.
-        """
+    Attributes:
+        EMBEDDING_COLUMNS: List of names of coumns under which the
+            embeddings are stored in the dataset.
+        data_mask: A dataframe containing a minimal subset (containing only
+            comment ids and author names) of the dataset balanced around its
+            author parameter.
+        data_file: A ParquetFile object to handle batch reading of the
+            dataset.
+        batch_size: The number of samples to process in each batch.
+        ipca: The IncrementalPCA object used for dimensionality reduction.
+    """
+
     EMBEDDING_COLUMNS = [f"embedding_{i}" for i in range(512)]
 
     def __init__(self, dataset_path=DATASET_PATH, batch_size=65536) -> None:
@@ -83,9 +84,9 @@ class PCAHandler:
         batch_count = self._get_batch_count()
 
         for batch in tqdm(
-                self._get_batches(),
-                total=batch_count,
-                desc="Fitting the PCA",
+            self._get_batches(),
+            total=batch_count,
+            desc="Fitting the PCA",
         ):
             batch_df = self._parse_batch(batch)
             if batch_df.empty:
@@ -112,9 +113,9 @@ class PCAHandler:
         batch_count = self._get_batch_count()
 
         for batch in tqdm(
-                self._get_batches(),
-                total=batch_count,
-                desc="Transforming the PCA",
+            self._get_batches(),
+            total=batch_count,
+            desc="Transforming the PCA",
         ):
             batch_df = self._parse_batch(batch)
             if batch_df.empty:
