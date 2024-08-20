@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 from sklearn.decomposition import PCA, IncrementalPCA
 from tqdm import tqdm
 
-from core.data.pca_generator import PCAHandler
+from core.data.pca_handler import PCAHandler
 from core.data.preprocessing import balance_dataset, prune_dataset
 import pyarrow.parquet as pq
 
@@ -221,6 +221,6 @@ if __name__ == "__main__":
     print("Plotting PCA...")
     # plotter.plot_PCA_incremental(dataset_pq_file)
     pca_generator = PCAHandler(DATASET_PATH)
-    transformed, transformed_ids = pca_generator.generate_pca()
+    transformed, transformed_ids, _ = pca_generator.generate_pca()
     categories = pca_generator.get_valid_categories()
     plotter.plot_PCA_incremental(transformed, transformed_ids, categories)

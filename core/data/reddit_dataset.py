@@ -9,7 +9,7 @@ class RedditDataset(Dataset):
         self.authors = dataframe["author"].values
 
     def __len__(self):
-        return len(self.img_labels)
+        return len(self.embeddings)
 
     def __getitem__(self, idx):
         embedding = self.embeddings[idx]

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from core.config import DATASET_PATH
+from core.config import DATASET_PATH, DATASET_PCA_PATH
 from core.data.preprocessing import balance_dataset
 from sklearn.decomposition import IncrementalPCA
 import pyarrow.parquet as pq
@@ -11,17 +11,18 @@ import pyarrow.parquet as pq
 class PCAHandler:
     """Performs incremental PCA on a dataset.
 
-        Attributes:
-            EMBEDDING_COLUMNS: List of names of coumns under which the
-                embeddings are stored in the dataset.
-            data_mask: A dataframe containing a minimal subset (containing only
-                comment ids and author names) of the dataset balanced around its
-                author parameter.
-            data_file: A ParquetFile object to handle batch reading of the
-                dataset.
-            batch_size: The number of samples to process in each batch.
-            ipca: The IncrementalPCA object used for dimensionality reduction.
-        """
+    Attributes:
+        EMBEDDING_COLUMNS: List of names of columns under which the
+            embeddings are stored in the dataset.
+        data_mask: A dataframe containing a minimal subset (containing only
+            comment ids and author names) of the dataset balanced around its
+            author parameter.
+        data_file: A ParquetFile object to handle batch reading of the
+            dataset.
+        batch_size: The number of samples to process in each batch.
+        ipca: The IncrementalPCA object used for dimensionality reduction.
+    """
+
     EMBEDDING_COLUMNS = [f"embedding_{i}" for i in range(512)]
 
     def __init__(self, dataset_path=DATASET_PATH, batch_size=65536) -> None:
@@ -83,9 +84,9 @@ class PCAHandler:
         batch_count = self._get_batch_count()
 
         for batch in tqdm(
-                self._get_batches(),
-                total=batch_count,
-                desc="Fitting the PCA",
+            self._get_batches(),
+            total=batch_count,
+            desc="Fitting the PCA",
         ):
             batch_df = self._parse_batch(batch)
             if batch_df.empty:
@@ -94,7 +95,7 @@ class PCAHandler:
             embeddings = batch_df[self.EMBEDDING_COLUMNS].values
             self.ipca.partial_fit(embeddings)
 
-    def transform(self) -> (np.ndarray, np.ndarray):
+    def transform(self) -> (np.ndarray, np.ndarray, np.ndarray):
         """
         Transforms the dataset using the fitted model by iterating over it batch
         by batch.
@@ -103,15 +104,18 @@ class PCAHandler:
             tuple:
                 - np.ndarray: An array of transformed PCA components.
                 - np.ndarray: An array of corresponding IDs for the components.
+                - np.ndarray: An array of corresponding authors for the
+                    components.
         """
         transformed = []
         transformed_ids = []
+        transformed_accounts = []
         batch_count = self._get_batch_count()
 
         for batch in tqdm(
-                self._get_batches(),
-                total=batch_count,
-                desc="Transforming the PCA",
+            self._get_batches(),
+            total=batch_count,
+            desc="Transforming the PCA",
         ):
             batch_df = self._parse_batch(batch)
             if batch_df.empty:
@@ -122,11 +126,12 @@ class PCAHandler:
 
             transformed.append(pca_embeddings)
             transformed_ids.extend(batch_df["id"].values)
+            transformed_accounts.extend(batch_df["author"].values)
 
         transformed = np.vstack(transformed)
         transformed_ids = np.array(transformed_ids)
 
-        return transformed, transformed_ids
+        return transformed, transformed_ids, transformed_accounts
 
     def get_explained_variance(self) -> np.ndarray:
         """Returns the explained variance ratio of each principal component.
@@ -148,16 +153,45 @@ class PCAHandler:
         """
         return np.cumsum(self.get_explained_variance())
 
-    def generate_pca(self) -> (np.ndarray, np.ndarray):
+    def generate_pca(self) -> (np.ndarray, np.ndarray, np.ndarray):
         """Fits the model and transforms the dataset.
 
         Returns:
             tuple:
                 - np.ndarray: An array of transformed PCA components.
                 - np.ndarray: An array of corresponding IDs for the components.
+                - np.ndarray: An array of corresponding authors for the
+                    components.
         """
         self.fit()
         return self.transform()
+
+    @staticmethod
+    def to_parquet(
+        pca: np.ndarray,
+        ids: np.ndarray,
+        authors: np.ndarray,
+        path: str = DATASET_PCA_PATH,
+    ) -> None:
+        """Stores the provided products of transform() to a Parquet file.
+
+        Args:
+            pca: An array of the PCA components.
+            ids: An array of the IDs for the components.
+            authors: An array of corresponding authors for the components
+            path: The path of the Parquet file to write to.
+        """
+        pca_x = pca[:, 0]
+        pca_y = pca[:, 1]
+        pca_z = pca[:, 2]
+        data = {
+            "pca_x": pca_x,
+            "pca_y": pca_y,
+            "pca_z": pca_z,
+            "author": authors,
+        }
+        df = pd.DataFrame(data, index=ids)
+        df.to_parquet(path, compression="gzip")
 
     def get_valid_categories(self) -> np.ndarray:
         """Returns the unique authors belonging to the balanced dataset.
