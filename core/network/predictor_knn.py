@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.metrics import confusion_matrix
 
-from core.data.pca_dataset import PCADataset
+from core.data.datasets.pca_dataset import PCADataset
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 

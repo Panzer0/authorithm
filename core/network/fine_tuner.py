@@ -1,5 +1,5 @@
 from sklearn.model_selection import train_test_split
-from core.data.reddit_dataset import RedditDataset
+from core.data.datasets.reddit_dataset import RedditDataset
 from core.config import DATASET_PATH
 
 
