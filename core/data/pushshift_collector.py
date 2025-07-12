@@ -70,9 +70,9 @@ class PushshiftCollector:
     Attributes:
         embedder: An Embedder object responsible for embedding generation.
     """
+
     def __init__(self) -> None:
-        """Inits PushshiftCollector.
-        """
+        """Inits PushshiftCollector."""
         self.embedder = Embedder()
 
     def zst_to_parquet_with_embeddings(

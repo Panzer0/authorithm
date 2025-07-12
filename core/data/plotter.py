@@ -47,7 +47,9 @@ class Plotter:
             thresholds = [25, 50, 75, 100, 125, 150]
 
         author_counts = self.data["author"].value_counts()
-        dataset_sizes = [author_counts[author_counts >= t].sum() for t in thresholds]
+        dataset_sizes = [
+            author_counts[author_counts >= t].sum() for t in thresholds
+        ]
 
         plt.figure(figsize=(8, 6))
         ax = sns.barplot(x=thresholds, y=dataset_sizes)
@@ -75,25 +77,34 @@ class Plotter:
             mask = self.data["author"] == category
             coords = pca_embeddings[mask]
 
-            fig.add_trace(go.Scatter3d(
-                x=coords[:, 0], y=coords[:, 1], z=coords[:, 2],
-                mode="markers",
-                marker=dict(size=5, color=i, colorscale="Viridis", opacity=0.8),
-                name=category,
-            ))
+            fig.add_trace(
+                go.Scatter3d(
+                    x=coords[:, 0],
+                    y=coords[:, 1],
+                    z=coords[:, 2],
+                    mode="markers",
+                    marker=dict(
+                        size=5, color=i, colorscale="Viridis", opacity=0.8
+                    ),
+                    name=category,
+                )
+            )
 
         fig.update_layout(
             title="3D PCA Scatter Plot of Users",
-            width=1600, height=1000,
+            width=1600,
+            height=1000,
             scene=dict(
                 xaxis=dict(title="PC 1"),
                 yaxis=dict(title="PC 2"),
-                zaxis=dict(title="PC 3")
-            )
+                zaxis=dict(title="PC 3"),
+            ),
         )
         fig.show()
 
-    def plot_PCA_incremental(self, transformed, transformed_ids, categories=None) -> None:
+    def plot_PCA_incremental(
+        self, transformed, transformed_ids, categories=None
+    ) -> None:
         """Displays a 3D PCA plot using pre-transformed embeddings."""
         if categories is None:
             categories = self.data["author"].unique()
@@ -106,21 +117,28 @@ class Plotter:
             indices = [id_index_map[id_] for id_ in ids if id_ in id_index_map]
             coords = transformed[indices]
 
-            fig.add_trace(go.Scatter3d(
-                x=coords[:, 0], y=coords[:, 1], z=coords[:, 2],
-                mode="markers",
-                marker=dict(size=5, color=i, colorscale="Viridis", opacity=0.8),
-                name=category,
-            ))
+            fig.add_trace(
+                go.Scatter3d(
+                    x=coords[:, 0],
+                    y=coords[:, 1],
+                    z=coords[:, 2],
+                    mode="markers",
+                    marker=dict(
+                        size=5, color=i, colorscale="Viridis", opacity=0.8
+                    ),
+                    name=category,
+                )
+            )
 
         fig.update_layout(
             title="3D PCA Scatter Plot of Users",
-            width=1600, height=1000,
+            width=1600,
+            height=1000,
             scene=dict(
                 xaxis=dict(title="PC 1"),
                 yaxis=dict(title="PC 2"),
-                zaxis=dict(title="PC 3")
-            )
+                zaxis=dict(title="PC 3"),
+            ),
         )
         fig.show()
 
