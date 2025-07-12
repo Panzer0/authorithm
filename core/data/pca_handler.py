@@ -196,3 +196,10 @@ class PCAHandler:
             np.ndarray: An array of IDs belonging to the balanced dataset.
         """
         return self.data_mask["id"].unique()
+
+if __name__ == '__main__':
+    # Save PCA to a file
+    pca_handler = PCAHandler()
+    pca_data = pca_handler.generate_pca()
+    pca_handler.to_parquet(*pca_data)
+
