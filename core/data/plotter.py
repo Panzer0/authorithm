@@ -137,13 +137,4 @@ if __name__ == "__main__":
 
     plotter = Plotter(dataset)
 
-    # print("Plotter created")
-    # plotter.plot_count_hist()
-    # print("First plot done")
-    # plotter.plot_count_CDF()
-    # plotter.plot_count_threshold_sizes(
-    #     [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
-    # )
-    # plotter.plot_PCA_incremental(dataset_pq_file)
-
     plotter.plot_PCA_incremental(transformed, transformed_ids, categories)
