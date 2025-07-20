@@ -6,9 +6,7 @@ import plotly.graph_objs as go
 from sklearn.decomposition import PCA
 from tqdm import tqdm
 
-from core.data.pca_handler import PCAHandler
 from core.data.preprocessing import balance_dataset
-import pyarrow.parquet as pq
 
 from core.config import DATASET_PATH
 
