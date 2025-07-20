@@ -6,11 +6,13 @@ import pandas as pd
 class PCADataset(Dataset):
     def __init__(self, data_file):
         dataframe = pd.read_parquet(data_file)
-        self.pca = np.column_stack((
-            dataframe["pca_x"].values,
-            dataframe["pca_y"].values,
-            dataframe["pca_z"].values
-        ))
+        self.pca = np.column_stack(
+            (
+                dataframe["pca_x"].values,
+                dataframe["pca_y"].values,
+                dataframe["pca_z"].values,
+            )
+        )
         self.authors = dataframe["author"].values
 
     def __len__(self):
