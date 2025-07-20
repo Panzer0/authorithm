@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.metrics import confusion_matrix
 
-from core.data.pca_dataset import PCADataset
+from core.data.dataset.pca_dataset import PCADataset
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 
@@ -35,4 +35,4 @@ if __name__ == "__main__":
     true_positives = np.diag(confusion)
     precision = np.mean(true_positives / np.sum(confusion, axis=0))
     recall = np.mean(true_positives / np.sum(confusion, axis=1))
-    print('Precision: {}\nRecall: {}'.format(precision, recall))
+    print("Precision: {}\nRecall: {}".format(precision, recall))

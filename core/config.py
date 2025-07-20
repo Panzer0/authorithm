@@ -22,6 +22,8 @@ COMPRESSED_FILENAME = f"{SUBREDDIT_NAME}_comments.zst"
 COMPRESSED_PATH = f"raw_data/compressed/{COMPRESSED_FILENAME}"
 
 # The parquet-converted dataset's filename
-UNCOMPRESSED_FILENAME = f"dataset_{SUBREDDIT_NAME}_large_experimental.parquet.gzip"
+UNCOMPRESSED_FILENAME = (
+    f"dataset_{SUBREDDIT_NAME}_large_experimental.parquet.gzip"
+)
 # The parquet-converted dataset's path
 UNCOMPRESSED_PATH = f"datasets/{UNCOMPRESSED_FILENAME}"
