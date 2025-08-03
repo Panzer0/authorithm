@@ -3,7 +3,7 @@ from core.data.embedder import Embedder
 from tqdm import tqdm
 import zstandard as zstd
 import io
-from core.config import UNCOMPRESSED_PATH, COMPRESSED_PATH
+from core.config import UNCOMPRESSED_PATH_JINA, COMPRESSED_PATH
 from core.data.processors.parquet_chunk_writer import ParquetChunkWriter
 
 
@@ -19,7 +19,6 @@ class PushshiftEmbeddingProcessor:
     """
 
     def __init__(self) -> None:
-        """Inits PushshiftCollector."""
         self.embedder = Embedder()
 
     def zst_to_parquet_with_embeddings(
@@ -159,4 +158,6 @@ class PushshiftEmbeddingProcessor:
 
 if __name__ == "__main__":
     collector = PushshiftEmbeddingProcessor()
-    collector.zst_to_parquet_with_embeddings(COMPRESSED_PATH, UNCOMPRESSED_PATH)
+    collector.zst_to_parquet_with_embeddings(
+        COMPRESSED_PATH, UNCOMPRESSED_PATH_JINA
+    )
