@@ -17,7 +17,6 @@ class XGBoostAuthorModel(AuthorModel):
             num_class=len(self.label_encoder.classes_),
             eval_metric="mlogloss",
             tree_method="hist",
-            device="cuda",
             n_jobs=-1,
         )
         self.clf.fit(X, y_encoded)
