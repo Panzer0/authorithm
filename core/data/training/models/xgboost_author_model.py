@@ -16,7 +16,6 @@ class XGBoostAuthorModel(AuthorModel):
             objective="multi:softprob",
             num_class=len(self.label_encoder.classes_),
             eval_metric="mlogloss",
-            use_label_encoder=False,
             tree_method="hist",
             device="cuda",
             n_jobs=-1,
