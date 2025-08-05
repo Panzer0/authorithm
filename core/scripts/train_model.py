@@ -59,10 +59,7 @@ if __name__ == "__main__":
         description="Train and evaluate authorship attribution models."
     )
     parser.add_argument(
-        "--model",
-        type=str,
-        choices=MODEL_REGISTRY.keys(),
-        default="xgboost"
+        "--model", type=str, choices=MODEL_REGISTRY.keys(), default="xgboost"
     )
     parser.add_argument(
         "--explore",
