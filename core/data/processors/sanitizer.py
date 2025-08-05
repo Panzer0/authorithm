@@ -16,9 +16,7 @@ class Sanitizer:
     def _compile_patterns(self):
         return {
             "raw_links": re.compile(r"https?://[^\s)\]]+"),
-            "horizontal_rules": re.compile(
-                r"^\s*[*_\-]{3,}\s*$", re.MULTILINE
-            ),
+            "horizontal_rules": re.compile(r"^\s*[*_\-]{3,}\s*$", re.MULTILINE),
             "markdown_patterns": [
                 re.compile(r"```([\s\S]*?)```"),  # multiline code block
                 re.compile(r"\*\*(.*?)\*\*"),  # bold
