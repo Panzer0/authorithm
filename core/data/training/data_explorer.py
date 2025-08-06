@@ -105,6 +105,7 @@ class DataExplorer:
                 for _, row in rows.iterrows():
                     print(f"Value: {row[col]:.4f}")
                     print(f"Author: {row['author']}")
+                    print(f"ID: {row['id']}")
                     print(
                         f"Body: {row['body'][:300]}{'...' if len(row['body']) > 300 else ''}"
                     )
