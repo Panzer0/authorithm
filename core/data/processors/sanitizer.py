@@ -9,7 +9,7 @@ class Sanitizer:
     Computes the ratio of text that had formatting applied to it.
     """
 
-    def __init__(self, strip_raw_links: bool = False):
+    def __init__(self, strip_raw_links: bool = True):
         self.strip_raw_links = strip_raw_links
         self._compiled = self._compile_patterns()
 
