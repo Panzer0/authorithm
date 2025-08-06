@@ -9,6 +9,7 @@ from core.config import COMPRESSED_PATH, UNCOMPRESSED_PATH_STYLOMETRIC
 from core.data.embedder import Embedder
 from core.data.processors.feature_extractor import FeatureExtractor
 from core.data.processors.parquet_chunk_writer import ParquetChunkWriter
+from core.data.processors.sanitizer import Sanitizer
 
 
 class PushshiftStylometricProcessor:
@@ -27,6 +28,7 @@ class PushshiftStylometricProcessor:
     def __init__(self) -> None:
         self.embedder = Embedder()
         self.feature_extractor = FeatureExtractor()
+        self.sanitizer = Sanitizer()
 
     def zst_to_parquet_with_embeddings(
         self,
@@ -156,6 +158,7 @@ class PushshiftStylometricProcessor:
         """
         data = json.loads(line)
         body = data.get("body", "")
+        body, markup_ratio = self.sanitizer.sanitize(body)
 
         created_utc = int(data.get("created_utc"))
         time_features = self._extract_time_features(created_utc)
@@ -182,6 +185,7 @@ class PushshiftStylometricProcessor:
             "adv_ratio": features["adv_ratio"],
             "type_token_ratio": features["type_token_ratio"],
             "word_count": features["word_count"],
+            "markup_ratio": markup_ratio,
         }
         return filtered_data
 
