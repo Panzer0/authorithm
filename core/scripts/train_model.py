@@ -63,7 +63,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--explore",
-        action="store_false",
+        action="store_true",
         default=False,
         help="Run exploratory data analysis",
     )
