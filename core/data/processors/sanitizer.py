@@ -18,6 +18,7 @@ class Sanitizer:
             "raw_links": re.compile(r"https?://[^\s)\]]+"),
             "horizontal_rules": re.compile(r"^\s*[*_\-]{3,}\s*$", re.MULTILINE),
             "markdown_patterns": [
+                re.compile(r"\[([^]]*)]\([^)]*\)"),  # markdown link
                 re.compile(r"```([\s\S]*?)```"),  # multiline code block
                 re.compile(r"\*\*(.*?)\*\*"),  # bold
                 re.compile(r"\*(.*?)\*"),  # italic
@@ -25,7 +26,6 @@ class Sanitizer:
                 re.compile(r"~~(.*?)~~"),  # strikethrough
                 re.compile(r"`(.*?)`"),  # inline code
                 re.compile(r">!(.*?)!<"),  # spoiler
-                re.compile(r"\[([^]]*)]\([^)]*\)"),  # markdown link
                 re.compile(r"^> ?(.*)", re.MULTILINE),  # blockquote
             ],
         }
