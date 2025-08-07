@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 from core.config import COMPRESSED_PATH, UNCOMPRESSED_PATH_STYLOMETRIC
 from core.data.embedder import Embedder
+from core.data.processors.empty_comment_exception import EmptyCommentException
 from core.data.processors.feature_extractor import FeatureExtractor
 from core.data.processors.parquet_chunk_writer import ParquetChunkWriter
 from core.data.processors.sanitizer import Sanitizer
@@ -116,6 +117,8 @@ class PushshiftStylometricProcessor:
                         chunk_count += 1
                     pbar.update(1)
                     pbar.set_postfix({"Chunks": chunk_count})
+                except EmptyCommentException:
+                    pass
                 except json.JSONDecodeError:
                     pbar.write(
                         f"Warning: Skipping invalid JSON on line {pbar.n + 1}"
@@ -159,6 +162,9 @@ class PushshiftStylometricProcessor:
         data = json.loads(line)
         body = data.get("body", "")
         body, markup_ratio = self.sanitizer.sanitize(body)
+
+        if not body:
+            raise EmptyCommentException
 
         created_utc = int(data.get("created_utc"))
         time_features = self._extract_time_features(created_utc)
