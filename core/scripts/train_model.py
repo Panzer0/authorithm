@@ -26,7 +26,6 @@ MODEL_REGISTRY = {
     "bayesian": BayesianAuthorModel,
 }
 
-
 def main(model_name: str, run_exploration: bool = False):
     if model_name not in MODEL_REGISTRY:
         raise ValueError(
@@ -37,22 +36,12 @@ def main(model_name: str, run_exploration: bool = False):
     model_cls = MODEL_REGISTRY[model_name]
     model = model_cls()
 
-    trainer = AuthorModelTrainer(model, FEATURES, UNCOMPRESSED_PATH_STYLOMETRIC)
-    (X_train, X_test, y_train, y_test), df = trainer.load_data(
-        trainer.path, trainer.sample_count, trainer.feature_columns
+    trainer = AuthorModelTrainer(
+        model=model,
+        feature_columns=FEATURES,
+        path=UNCOMPRESSED_PATH_STYLOMETRIC
     )
-
-    if run_exploration:
-        print("Running data exploration...")
-        explorer = DataExplorer(df, FEATURES)
-        explorer.run_full_exploration()
-
-    print("Training model...")
-    model.fit(X_train, y_train)
-
-    print("Evaluating model...")
-    results = model.evaluate(X_test, y_test)
-    print("Results:", results)
+    trainer.run(run_exploration=run_exploration)
 
 
 if __name__ == "__main__":
