@@ -1,6 +1,5 @@
 import argparse
 from core.config import UNCOMPRESSED_PATH_STYLOMETRIC
-from core.data.training.data_explorer import DataExplorer
 from core.data.training.models.bayesian_author_model import BayesianAuthorModel
 from core.data.training.models.xgboost_author_model import XGBoostAuthorModel
 from core.data.training.trainers.author_model_trainer import AuthorModelTrainer
