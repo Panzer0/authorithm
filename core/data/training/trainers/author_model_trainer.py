@@ -1,6 +1,7 @@
 from core.data.training.base.data_handler import DataHandlerMixin
 from core.data.training.data_explorer import DataExplorer
 
+
 class AuthorModelTrainer(DataHandlerMixin):
     def __init__(self, model, feature_columns, path, sample_count=1000):
         self.model = model

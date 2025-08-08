@@ -55,6 +55,7 @@ def test_keep_raw_links():
     assert cleaned == comment
     assert ratio == 0.0
 
+
 def test_nested_formatting():
     # Arrange
     comment = "*~~**[Nested](https://example.com)**~~* examples should work."
@@ -66,6 +67,7 @@ def test_nested_formatting():
     # Assert
     assert cleaned == "Nested examples should work."
     assert ratio == 6 / 28
+
 
 def test_complex_combo():
     # Arrange

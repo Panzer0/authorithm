@@ -30,20 +30,26 @@ class Sanitizer:
             ],
         }
 
-    def _process_match(self, match: re.Match, offset: int) -> Tuple[str, int, int]:
+    def _process_match(
+        self, match: re.Match, offset: int
+    ) -> Tuple[str, int, int]:
         """Cleans a single match: counts formatting, recurses, returns cleaned inner text and span."""
         start, end = match.span(1)
         global_start = offset + start
         global_end = offset + end
 
-        if not any(i in self.counted_spans for i in range(global_start, global_end)):
+        if not any(
+            i in self.counted_spans for i in range(global_start, global_end)
+        ):
             self.formatted_char_count += end - start
             self.counted_spans.update(range(global_start, global_end))
 
         cleaned_inner = self._parse_markdown(match.group(1), offset + start)
         return cleaned_inner, match.start(), match.end()
 
-    def _apply_pattern(self, text: str, pattern: re.Pattern, offset: int) -> str:
+    def _apply_pattern(
+        self, text: str, pattern: re.Pattern, offset: int
+    ) -> str:
         """Applies a single markdown pattern recursively and returns cleaned text."""
         matches = list(pattern.finditer(text))
         if not matches:
@@ -53,7 +59,9 @@ class Sanitizer:
         last_index = 0
 
         for match in matches:
-            cleaned_inner, match_start, match_end = self._process_match(match, offset)
+            cleaned_inner, match_start, match_end = self._process_match(
+                match, offset
+            )
             new_text.append(text[last_index:match_start])
             new_text.append(cleaned_inner)
             last_index = match_end

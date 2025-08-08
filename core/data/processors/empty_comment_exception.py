@@ -5,4 +5,5 @@ class EmptyCommentException(Exception):
     The comment does not have to be empty initially - its emptiness can be a
     result of sanitization.
     """
+
     pass

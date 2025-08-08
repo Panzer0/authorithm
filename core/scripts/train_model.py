@@ -17,13 +17,14 @@ FEATURES = [
     "type_token_ratio",
     "hour",
     "day_of_week",
-    "markup_ratio"
+    "markup_ratio",
 ]
 
 MODEL_REGISTRY = {
     "xgboost": XGBoostAuthorModel,
     "bayesian": BayesianAuthorModel,
 }
+
 
 def main(model_name: str, run_exploration: bool = False):
     if model_name not in MODEL_REGISTRY:
@@ -38,7 +39,7 @@ def main(model_name: str, run_exploration: bool = False):
     trainer = AuthorModelTrainer(
         model=model,
         feature_columns=FEATURES,
-        path=UNCOMPRESSED_PATH_STYLOMETRIC
+        path=UNCOMPRESSED_PATH_STYLOMETRIC,
     )
     trainer.run(run_exploration=run_exploration)
 
