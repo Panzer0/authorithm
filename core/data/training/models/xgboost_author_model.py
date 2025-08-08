@@ -33,6 +33,7 @@ class XGBoostAuthorModel(AuthorModel):
         y_pred = self.clf.predict(X)
         y_proba = self.clf.predict_proba(X)
         return {
-            "Top-1 Accuracy": accuracy_score(y_encoded, y_pred),
-            "Top-5 Accuracy": top_k_accuracy_score(y_encoded, y_proba, k=5),
+            "Top-1 Accuracy": round(accuracy_score(y_encoded, y_pred), 3),
+            "Top-5 Accuracy": round(top_k_accuracy_score(y_encoded, y_proba, k=5), 3),
+            "Top-10 Accuracy": round(top_k_accuracy_score(y_encoded, y_proba, k=10), 3),
         }

@@ -49,5 +49,5 @@ class BayesianAuthorModel(AuthorModel):
                 y_true[i] in [author_list[idx] for idx in top_k_preds[i]]
                 for i in range(len(y_true))
             ]
-            results[f"top_{k}_accuracy"] = np.mean(hits)
+            results[f"top_{k}_accuracy"] = round(np.mean(hits), 3)
         return results
