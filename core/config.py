@@ -26,7 +26,7 @@ UNCOMPRESSED_FILENAME_STYLOMETRIC = (
     f"dataset_{SUBREDDIT_NAME}_stylometric.parquet.gzip"
 )
 UNCOMPRESSED_FILENAME_JINA = (
-    f"dataset_{SUBREDDIT_NAME}_large_experimental.parquet.gzip"
+    f"dataset_{SUBREDDIT_NAME}_jina.parquet.gzip"
 )
 # The parquet-converted dataset's path
 UNCOMPRESSED_PATH_STYLOMETRIC = f"datasets/{UNCOMPRESSED_FILENAME_STYLOMETRIC}"
