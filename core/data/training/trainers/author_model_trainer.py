@@ -1,5 +1,5 @@
-from core.data.training.base.data_handler import DataHandlerMixin
 from core.data.training.data_explorer import DataExplorer
+from core.network.classification.base.data_handler import DataHandlerMixin
 
 
 class AuthorModelTrainer(DataHandlerMixin):
