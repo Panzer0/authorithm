@@ -1,6 +1,37 @@
 import pandas as pd
 
 
+def filter_by_feature(
+    df: pd.DataFrame,
+    feature: str,
+    min_value: float | None = None,
+    max_value: float | None = None,
+) -> pd.DataFrame:
+    """
+    Filters a dataframe based on a numeric feature column.
+
+    Args:
+        df: The dataframe to filter.
+        feature: Name of the feature column to filter by.
+        min_value: Minimum allowed value (inclusive). None to ignore.
+        max_value: Maximum allowed value (inclusive). None to ignore.
+
+    Returns:
+        A filtered dataframe containing only rows that meet the criteria.
+    """
+    if feature not in df.columns:
+        raise ValueError(f"Feature '{feature}' not found in dataframe.")
+
+    mask = pd.Series(True, index=df.index)
+
+    if min_value is not None:
+        mask &= df[feature] >= min_value
+    if max_value is not None:
+        mask &= df[feature] <= max_value
+
+    return df[mask]
+
+
 def balance_dataset(df: pd.DataFrame, sample_count: int) -> pd.DataFrame:
     """Balances a dataset.
 

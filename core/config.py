@@ -14,7 +14,7 @@ DATASET_PATH = f"datasets/{DATASET_FILENAME}"
 DATASET_PCA_PATH = f"datasets/pca/{DATASET_FILENAME}"
 
 
-## PushshiftCollector-related values
+## Processor-related values
 
 # The .zst-compressed dataset's filename
 COMPRESSED_FILENAME = f"{SUBREDDIT_NAME}_comments.zst"
@@ -22,8 +22,12 @@ COMPRESSED_FILENAME = f"{SUBREDDIT_NAME}_comments.zst"
 COMPRESSED_PATH = f"raw_data/compressed/{COMPRESSED_FILENAME}"
 
 # The parquet-converted dataset's filename
-UNCOMPRESSED_FILENAME = (
+UNCOMPRESSED_FILENAME_STYLOMETRIC = (
+    f"dataset_{SUBREDDIT_NAME}_stylometric.parquet.gzip"
+)
+UNCOMPRESSED_FILENAME_JINA = (
     f"dataset_{SUBREDDIT_NAME}_large_experimental.parquet.gzip"
 )
 # The parquet-converted dataset's path
-UNCOMPRESSED_PATH = f"datasets/{UNCOMPRESSED_FILENAME}"
+UNCOMPRESSED_PATH_STYLOMETRIC = f"datasets/{UNCOMPRESSED_FILENAME_STYLOMETRIC}"
+UNCOMPRESSED_PATH_JINA = f"datasets/{UNCOMPRESSED_FILENAME_JINA}"
