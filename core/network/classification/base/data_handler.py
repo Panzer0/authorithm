@@ -10,7 +10,7 @@ class DataHandlerMixin:
         df = filter_by_feature(df, "avg_word_length", min_value=2.5)
         df = filter_by_feature(df, "readability", min_value=-5)
         df = filter_by_feature(df, "punct_ratio", max_value=0.5)
-        df = filter_by_feature(df, "markdown_ratio", max_value=1)
+        df = filter_by_feature(df, "markup_ratio", max_value=1)
         # df = filter_by_feature(df, "avg_word", min_value=5)
         df = balance_dataset(df, sample_count=sample_count)
         X = df[feature_columns]
