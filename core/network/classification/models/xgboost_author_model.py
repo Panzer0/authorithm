@@ -18,6 +18,7 @@ class XGBoostAuthorModel(AuthorModel):
         self.xgb_params = xgb_params
 
     def fit(self, X, y):
+        """Fit the model to training data."""
         y_encoded = self.label_encoder.fit_transform(y)
 
         default_params = {
@@ -33,6 +34,7 @@ class XGBoostAuthorModel(AuthorModel):
         self.clf.fit(X, y_encoded)
 
     def predict(self, X):
+        """Predict the most likely author for each sample."""
         if self.clf is None:
             raise ValueError("Model must be fitted before prediction")
 
@@ -40,12 +42,27 @@ class XGBoostAuthorModel(AuthorModel):
         return self.label_encoder.inverse_transform(y_pred)
 
     def predict_proba(self, X):
+        """Predict class probabilities for each sample.
+
+        Returns:
+            np.ndarray: Shape (n_samples, n_authors) probability matrix
+        """
         if self.clf is None:
             raise ValueError("Model must be fitted before prediction")
 
         return self.clf.predict_proba(X)
 
     def evaluate(self, X, y, top_k=(1, 5, 10)):
+        """Evaluate model performance with top-k accuracy metrics.
+
+        Args:
+            X: Features
+            y: True labels
+            top_k: Tuple of k values for top-k accuracy
+
+        Returns:
+            dict: Evaluation metrics with standardized naming
+        """
         if self.clf is None:
             raise ValueError("Model must be fitted before evaluation")
 

@@ -32,6 +32,11 @@ class BayesianAuthorModel(AuthorModel):
             self.models[author] = model
 
     def predict_proba(self, X):
+        """Predict class probabilities for each sample.
+
+        Returns:
+            np.ndarray: Shape (n_samples, n_authors) probability matrix
+        """
         n_samples = len(X)
         n_authors = len(self.models)
         score_matrix = np.zeros((n_samples, n_authors))
@@ -49,13 +54,22 @@ class BayesianAuthorModel(AuthorModel):
         return probabilities
 
     def predict(self, X):
+        """Predict the most likely author for each sample."""
         probabilities = self.predict_proba(X)
         return np.array([self.index_to_author[idx] for idx in
                          np.argmax(probabilities, axis=1)])
 
     def evaluate(self, X, y, top_k=(1, 5, 10)):
+        """Evaluate model performance with top-k accuracy metrics.
 
+        Args:
+            X: Features
+            y: True labels
+            top_k: Tuple of k values for top-k accuracy
 
+        Returns:
+            dict: Evaluation metrics with standardized naming
+        """
         # Convert string labels to indices for sklearn compatibility
         y_encoded = np.array([self.author_to_index[author] for author in y])
         y_proba = self.predict_proba(X)
