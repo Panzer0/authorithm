@@ -1,12 +1,17 @@
 import xgboost as xgb
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score, top_k_accuracy_score
+from sklearn.metrics import top_k_accuracy_score
 
 from core.network.classification.base.author_model import AuthorModel
 
 
 class XGBoostAuthorModel(AuthorModel):
     def __init__(self, **xgb_params):
+        """Initialize XGBoost model with optional parameters.
+
+        Args:
+            **xgb_params: Additional parameters for XGBClassifier
+        """
         self.label_encoder = LabelEncoder()
         self.clf = None
         self.xgb_params = xgb_params
@@ -33,12 +38,18 @@ class XGBoostAuthorModel(AuthorModel):
     def predict_proba(self, X):
         return self.clf.predict_proba(X)
 
-    def evaluate(self, X, y):
+    def evaluate(self, X, y, top_k=(1, 5, 10)):
         y_encoded = self.label_encoder.transform(y)
-        y_pred = self.clf.predict(X)
         y_proba = self.clf.predict_proba(X)
-        return {
-            "Top-1 Accuracy": round(accuracy_score(y_encoded, y_pred), 3),
-            "Top-5 Accuracy": round(top_k_accuracy_score(y_encoded, y_proba, k=5), 3),
-            "Top-10 Accuracy": round(top_k_accuracy_score(y_encoded, y_proba, k=10), 3),
-        }
+
+        results = {}
+        n_classes = len(self.label_encoder.classes_)
+
+        for k in top_k:
+            if k <= n_classes:
+                accuracy = top_k_accuracy_score(y_encoded, y_proba, k=k)
+                results[f"top_{k}_accuracy"] = round(accuracy, 3)
+            else:
+                results[f"top_{k}_accuracy"] = 1.0
+
+        return results
