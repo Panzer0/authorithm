@@ -1,7 +1,6 @@
 import numpy as np
-from sklearn.mixture import BayesianGaussianMixture
 from sklearn.metrics import top_k_accuracy_score
-from tqdm import tqdm
+from sklearn.mixture import BayesianGaussianMixture
 
 from core.network.classification.base.author_model import AuthorModel
 
