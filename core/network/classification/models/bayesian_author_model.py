@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.mixture import BayesianGaussianMixture
 from tqdm import tqdm
 
-from core.data.training.base.author_model import AuthorModel
+from core.network.classification.base.author_model import AuthorModel
 
 
 class BayesianAuthorModel(AuthorModel):

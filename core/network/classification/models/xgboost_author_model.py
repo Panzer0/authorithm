@@ -2,7 +2,7 @@ import xgboost as xgb
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score, top_k_accuracy_score
 
-from core.data.training.base.author_model import AuthorModel
+from core.network.classification.base.author_model import AuthorModel
 
 
 class XGBoostAuthorModel(AuthorModel):
