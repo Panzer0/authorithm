@@ -1,4 +1,4 @@
-from core.data.training.data_explorer import DataExplorer
+from core.data.data_explorer import DataExplorer
 from core.network.classification.base.data_handler import DataHandlerMixin
 
 
