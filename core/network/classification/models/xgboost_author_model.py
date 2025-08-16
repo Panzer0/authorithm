@@ -6,19 +6,24 @@ from core.network.classification.base.author_model import AuthorModel
 
 
 class XGBoostAuthorModel(AuthorModel):
-    def __init__(self):
+    def __init__(self, **xgb_params):
         self.label_encoder = LabelEncoder()
         self.clf = None
+        self.xgb_params = xgb_params
 
     def fit(self, X, y):
         y_encoded = self.label_encoder.fit_transform(y)
-        self.clf = xgb.XGBClassifier(
-            objective="multi:softprob",
-            num_class=len(self.label_encoder.classes_),
-            eval_metric="mlogloss",
-            tree_method="hist",
-            n_jobs=-1,
-        )
+
+        default_params = {
+            "objective": "multi:softprob",
+            "eval_metric": "mlogloss",
+            "tree_method": "hist",
+            "n_jobs": -1,
+            "random_state": 42,
+        }
+        default_params.update(self.xgb_params)
+
+        self.clf = xgb.XGBClassifier(**default_params)
         self.clf.fit(X, y_encoded)
 
     def predict(self, X):
