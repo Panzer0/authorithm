@@ -1,11 +1,14 @@
 import argparse
 from core.config import UNCOMPRESSED_PATH_STYLOMETRIC
-from core.network.classification.models.bayesian_author_model import \
-    BayesianAuthorModel
-from core.network.classification.models.xgboost_author_model import \
-    XGBoostAuthorModel
-from core.network.classification.trainers.author_model_trainer import \
-    AuthorModelTrainer
+from core.network.classification.models.bayesian_author_model import (
+    BayesianAuthorModel,
+)
+from core.network.classification.models.xgboost_author_model import (
+    XGBoostAuthorModel,
+)
+from core.network.classification.trainers.author_model_trainer import (
+    AuthorModelTrainer,
+)
 
 FEATURES = [
     "char_count",

@@ -16,10 +16,12 @@ class BayesianAuthorModel(AuthorModel):
     def fit(self, X, y):
         """Fit the model to training data."""
         unique_authors = sorted(y.unique())  # Sort for consistency
-        self.author_to_index = {author: idx for idx, author in
-                                enumerate(unique_authors)}
-        self.index_to_author = {idx: author for author, idx in
-                                self.author_to_index.items()}
+        self.author_to_index = {
+            author: idx for idx, author in enumerate(unique_authors)
+        }
+        self.index_to_author = {
+            idx: author for author, idx in self.author_to_index.items()
+        }
 
         for author in unique_authors:
             model = BayesianGaussianMixture(
@@ -48,7 +50,8 @@ class BayesianAuthorModel(AuthorModel):
 
         # Convert log-likelihoods to probabilities using softmax
         exp_scores = np.exp(
-            score_matrix - np.max(score_matrix, axis=1, keepdims=True))
+            score_matrix - np.max(score_matrix, axis=1, keepdims=True)
+        )
         probabilities = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
 
         return probabilities
@@ -56,8 +59,12 @@ class BayesianAuthorModel(AuthorModel):
     def predict(self, X):
         """Predict the most likely author for each sample."""
         probabilities = self.predict_proba(X)
-        return np.array([self.index_to_author[idx] for idx in
-                         np.argmax(probabilities, axis=1)])
+        return np.array(
+            [
+                self.index_to_author[idx]
+                for idx in np.argmax(probabilities, axis=1)
+            ]
+        )
 
     def evaluate(self, X, y, top_k=(1, 5, 10)):
         """Evaluate model performance with top-k accuracy metrics.
@@ -76,8 +83,7 @@ class BayesianAuthorModel(AuthorModel):
 
         results = {}
         for k in top_k:
-            if k <= len(
-                    self.models):  # Ensure k doesn't exceed number of classes
+            if k <= len(self.models):  # Ensure k doesn't exceed class count
                 accuracy = top_k_accuracy_score(y_encoded, y_proba, k=k)
                 results[f"top_{k}_accuracy"] = round(accuracy, 3)
             else:
