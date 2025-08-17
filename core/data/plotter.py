@@ -1,14 +1,10 @@
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-import seaborn as sns
+import pandas as pd
 import plotly.graph_objs as go
+import seaborn as sns
 from sklearn.decomposition import PCA
 from tqdm import tqdm
-
-from core.data.preprocessing import balance_dataset
-
-from core.config import DATASET_PATH
 
 
 class Plotter:
@@ -60,7 +56,7 @@ class Plotter:
         plt.title("Dataset size vs. comment count threshold")
         plt.show()
 
-    def plot_PCA(self) -> None:
+    def plot_PCA_embedding(self) -> None:
         """Displays a 3D PCA plot using plotly."""
         categories = self.data["author"].unique()
         embedding_columns = [f"embedding_{i}" for i in range(512)]
@@ -74,6 +70,45 @@ class Plotter:
         for i, category in enumerate(categories):
             mask = self.data["author"] == category
             coords = pca_embeddings[mask]
+
+            fig.add_trace(
+                go.Scatter3d(
+                    x=coords[:, 0],
+                    y=coords[:, 1],
+                    z=coords[:, 2],
+                    mode="markers",
+                    marker=dict(
+                        size=5, color=i, colorscale="Viridis", opacity=0.8
+                    ),
+                    name=category,
+                )
+            )
+
+        fig.update_layout(
+            title="3D PCA Scatter Plot of Users",
+            width=1600,
+            height=1000,
+            scene=dict(
+                xaxis=dict(title="PC 1"),
+                yaxis=dict(title="PC 2"),
+                zaxis=dict(title="PC 3"),
+            ),
+        )
+        fig.show()
+
+    def plot_PCA(self, pca_column_names) -> None:
+        """Displays a 3D PCA plot using plotly."""
+        categories = self.data["author"].unique()
+        pca_columns = self.data[pca_column_names].values
+
+        pca = PCA(n_components=3)
+        pca_reduced_columns = pca.fit_transform(pca_columns)
+
+        fig = go.Figure()
+
+        for i, category in enumerate(categories):
+            mask = self.data["author"] == category
+            coords = pca_reduced_columns[mask]
 
             fig.add_trace(
                 go.Scatter3d(
