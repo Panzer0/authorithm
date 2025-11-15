@@ -91,8 +91,8 @@ class Sanitizer:
         )
 
         visible_len = len(self.cleaned_comment.strip())
-        markup_ratio = (
+        markdown_ratio = (
             self.formatted_char_count / visible_len if visible_len > 0 else 0.0
         )
 
-        return self.cleaned_comment.strip(), markup_ratio
+        return self.cleaned_comment.strip(), markdown_ratio

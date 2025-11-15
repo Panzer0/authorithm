@@ -161,7 +161,7 @@ class PushshiftStylometricProcessor:
         """
         data = json.loads(line)
         body = data.get("body", "")
-        body, markup_ratio = self.sanitizer.sanitize(body)
+        body, markdown_ratio = self.sanitizer.sanitize(body)
 
         if not body:
             raise EmptyCommentException
@@ -191,7 +191,7 @@ class PushshiftStylometricProcessor:
             "adv_ratio": features["adv_ratio"],
             "type_token_ratio": features["type_token_ratio"],
             "word_count": features["word_count"],
-            "markup_ratio": markup_ratio,
+            "markdown_ratio": markdown_ratio,
         }
         return filtered_data
 

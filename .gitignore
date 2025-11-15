@@ -190,7 +190,8 @@ cython_debug/
 # .idea/compiler.xml
 # .idea/jarRepositories.xml
 # .idea/modules.xml
-# .idea/*.iml
+ .idea/*.iml
+ .idea/misc.xml
 # .idea/modules
 # *.iml
 # *.ipr
