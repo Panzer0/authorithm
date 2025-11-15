@@ -23,7 +23,7 @@ FEATURES = [
     "type_token_ratio",
     "hour",
     "day_of_week",
-    "markup_ratio",
+    "markdown_ratio",
 ]
 
 MODEL_REGISTRY = {

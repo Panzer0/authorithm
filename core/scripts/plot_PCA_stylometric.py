@@ -17,7 +17,7 @@ FEATURES = [
     "type_token_ratio",
     "hour",
     "day_of_week",
-    "markup_ratio",
+    "markdown_ratio",
 ]
 
 
@@ -29,7 +29,7 @@ def main():
     dataset = filter_by_feature(dataset, "avg_word_length", min_value=2.5)
     dataset = filter_by_feature(dataset, "readability", min_value=-5)
     dataset = filter_by_feature(dataset, "punct_ratio", max_value=0.5)
-    dataset = filter_by_feature(dataset, "markup_ratio", max_value=1)
+    dataset = filter_by_feature(dataset, "markdown_ratio", max_value=1)
 
     dataset = balance_dataset(dataset, 1000)
 
