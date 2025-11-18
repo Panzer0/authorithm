@@ -239,3 +239,6 @@ praw.ini
 datasets/
 /datasets
 /raw_data/
+
+# The authorithm-created graphs
+graphs/

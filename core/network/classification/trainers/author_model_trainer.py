@@ -1,4 +1,4 @@
-from core.data.data_explorer import DataExplorer
+from core.data.data_exploration.data_explorer import DataExplorer
 from core.network.classification.base.data_handler import DataHandlerMixin
 
 
@@ -17,12 +17,16 @@ class AuthorModelTrainer(DataHandlerMixin):
         )
         return X_train, X_test, y_train, y_test, df
 
-    def run(self, run_exploration=False):
+    def run(self, run_exploration=False, display_mode=None):
         X_train, X_test, y_train, y_test, df = self.prepare_data()
 
         if run_exploration:
             print("Running data exploration...")
-            explorer = DataExplorer(df, self.feature_columns)
+            explorer = (
+                DataExplorer(df, self.feature_columns, display_mode)
+                if display_mode
+                else DataExplorer(df, self.feature_columns)
+            )
             explorer.run_full_exploration()
 
         print(f"Training on {len(X_train)} samples...")

@@ -1,7 +1,10 @@
 import numpy as np
 import xgboost as xgb
+from sklearn.metrics import (
+    top_k_accuracy_score,
+    precision_recall_fscore_support,
+)
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import top_k_accuracy_score
 
 from core.network.classification.base.author_model import AuthorModel
 
@@ -52,8 +55,8 @@ class XGBoostAuthorModel(AuthorModel):
 
         return self.clf.predict_proba(X)
 
-    def evaluate(self, X, y, top_k=(1, 5, 10)):
-        """Evaluate model performance with top-k accuracy metrics.
+    def evaluate(self, X, y, top_k=(1, 3, 5, 10)):
+        """Evaluate model performance with various metrics.
 
         Args:
             X: Features
@@ -61,22 +64,40 @@ class XGBoostAuthorModel(AuthorModel):
             top_k: Tuple of k values for top-k accuracy
 
         Returns:
-            dict: Evaluation metrics with standardized naming
+            dict: Evaluation metrics
         """
         if self.clf is None:
             raise ValueError("Model must be fitted before evaluation")
 
-        y_encoded = self.label_encoder.transform(y)
-        y_proba = self.clf.predict_proba(X)
+        y_true = self.label_encoder.transform(y)
+        y_pred = self.clf.predict(X)  # predicted class
+        y_proba = self.clf.predict_proba(X)  # probability matrix
 
         results = {}
         n_classes = len(self.label_encoder.classes_)
 
+        precision, recall, f1, support = precision_recall_fscore_support(
+            y_true, y_pred, average=None, labels=np.arange(n_classes)
+        )
+        results["precision_macro"] = round(np.mean(precision), 4)
+        results["recall_macro"] = round(np.mean(recall), 4)
+        results["f1_macro"] = round(np.mean(f1), 4)
+        results["precision_weighted"] = round(
+            np.average(precision, weights=support), 4
+        )
+        results["recall_weighted"] = round(
+            np.average(recall, weights=support), 4
+        )
+        results["f1_weighted"] = round(np.average(f1, weights=support), 4)
+
+        # 3. Top-k accuracy
         for k in top_k:
-            if k <= n_classes:
-                accuracy = top_k_accuracy_score(y_encoded, y_proba, k=k)
-                results[f"top_{k}_accuracy"] = round(accuracy, 3)
-            else:
+            if k > n_classes:
                 results[f"top_{k}_accuracy"] = 1.0
+            else:
+                acc = top_k_accuracy_score(
+                    y_true, y_proba, k=k, labels=np.arange(n_classes)
+                )
+                results[f"top_{k}_accuracy"] = round(acc, 4)
 
         return results
