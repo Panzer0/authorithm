@@ -32,7 +32,9 @@ MODEL_REGISTRY = {
 }
 
 
-def main(model_name: str, run_exploration: bool = False):
+def main(
+    model_name: str, run_exploration: bool = False, display_mode: str = None
+):
     if model_name not in MODEL_REGISTRY:
         raise ValueError(
             f"Unknown model: {model_name}. Choose from {list(MODEL_REGISTRY.keys())}"
@@ -47,7 +49,7 @@ def main(model_name: str, run_exploration: bool = False):
         feature_columns=FEATURES,
         path=UNCOMPRESSED_PATH_STYLOMETRIC,
     )
-    trainer.run(run_exploration=run_exploration)
+    trainer.run(run_exploration=run_exploration, display_mode=display_mode)
 
 
 if __name__ == "__main__":
@@ -63,6 +65,20 @@ if __name__ == "__main__":
         default=False,
         help="Run exploratory data analysis",
     )
+    parser.add_argument(
+        "--display_mode",
+        default=None,
+        help=(
+            "How results should be displayed:\n"
+            "  sequential - show items one after another\n"
+            "  grid       - show items in a grid layout\n"
+            "(default: sequential)"
+        ),
+    )
     args = parser.parse_args()
 
-    main(model_name=args.model, run_exploration=args.explore)
+    main(
+        model_name=args.model,
+        run_exploration=args.explore,
+        display_mode=args.display_mode,
+    )
