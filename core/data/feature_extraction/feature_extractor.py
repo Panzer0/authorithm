@@ -42,9 +42,7 @@ class FeatureExtractor:
         return features
 
     @staticmethod
-    def _compute_base_metrics(
-            doc: spacy.tokens.Doc, text: str
-    ) -> TextMetrics:
+    def _compute_base_metrics(doc: spacy.tokens.Doc, text: str) -> TextMetrics:
         """Compute basic text metrics."""
         tokens = list(doc)
 
