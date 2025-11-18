@@ -7,8 +7,8 @@ from tqdm import tqdm
 
 from core.config import COMPRESSED_PATH, UNCOMPRESSED_PATH_STYLOMETRIC
 from core.data.embedder import Embedder
+from core.data.feature_extraction.feature_extractor import FeatureExtractor
 from core.data.processors.empty_comment_exception import EmptyCommentException
-from core.data.processors.feature_extractor import FeatureExtractor
 from core.data.processors.parquet_chunk_writer import ParquetChunkWriter
 from core.data.processors.sanitizer import Sanitizer
 
