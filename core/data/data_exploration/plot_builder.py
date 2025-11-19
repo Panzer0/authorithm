@@ -39,14 +39,14 @@ class PlotBuilder:
         plt.show()
 
     def create_correlation_heatmap(self, method: str = "pearson"):
-        """Create a correlation heatmap."""
+        """Create a correlation heatmap and return the figure."""
         if method not in ["pearson", "spearman"]:
             raise ValueError("Method must be 'pearson' or 'spearman'.")
 
         corr = self.df[self.feature_columns].corr(method=method)
         mask = np.triu(np.ones_like(corr, dtype=bool))
 
-        plt.figure(figsize=(12, 10))
+        fig = plt.figure(figsize=(12, 10))
         sns.heatmap(
             corr,
             mask=mask,
@@ -62,4 +62,4 @@ class PlotBuilder:
             fontsize=16,
         )
         plt.tight_layout()
-        plt.show()
+        return fig

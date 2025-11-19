@@ -3,7 +3,6 @@ import string
 from collections import Counter
 from typing import Dict, List
 
-import numpy as np
 import spacy
 import textstat
 
@@ -16,12 +15,15 @@ class FeatureExtractor:
     DEFAULT_MODEL = "en_core_web_sm"
     DISABLED_PIPES = ["ner", "parser"]
 
-    POS_TAGS = ["NOUN", "VERB", "ADJ", "ADV"]
-
-    def __init__(self, model_name: str = None):
-        """Initialize the feature extractor."""
-        model_name = model_name or self.DEFAULT_MODEL
-        self.nlp = spacy.load(model_name, disable=self.DISABLED_PIPES)
+    def __init__(self, nlp_instance=None, model_name: str = None):
+        """
+        Initialize the feature extractor.
+        """
+        if nlp_instance:
+            self.nlp = nlp_instance
+        else:
+            model_to_load = model_name or self.DEFAULT_MODEL
+            self.nlp = spacy.load(model_to_load, disable=self.DISABLED_PIPES)
 
     def extract(self, text: str) -> Dict[str, float]:
         """Extract stylometric features from text."""
@@ -44,20 +46,17 @@ class FeatureExtractor:
     @staticmethod
     def _compute_base_metrics(doc: spacy.tokens.Doc, text: str) -> TextMetrics:
         """Compute basic text metrics."""
-        tokens = list(doc)
-
         words = []
         word_lengths = []
         valid_pos_tags = []
 
-        for token in tokens:
+        for token in doc:
             if not token.is_punct and not token.is_space:
                 words.append(token.text.lower())
                 word_lengths.append(len(token.text))
                 valid_pos_tags.append(token.pos_)
 
         pos_counts = Counter(valid_pos_tags)
-
         letter_count = sum(1 for c in text if c.isalpha())
 
         return TextMetrics(
@@ -75,7 +74,7 @@ class FeatureExtractor:
         total_words = metrics.word_count
 
         type_token_ratio = (
-            unique_words / math.sqrt(total_words) if total_words > 0 else 0
+            unique_words / math.sqrt(total_words) if total_words > 0 else 0.0
         )
 
         return {
@@ -135,12 +134,14 @@ class FeatureExtractor:
     @staticmethod
     def _safe_mean(values: List[float]) -> float:
         """Safely compute mean."""
-        return float(np.mean(values)) if values else 0.0
+        if not values:
+            return 0.0
+        return sum(values) / len(values)
 
     @staticmethod
     def _get_empty_features() -> Dict[str, float]:
         """Return feature dict with zero values for empty text."""
-        features = {
+        return {
             "char_count": 0.0,
             "word_count": 0.0,
             "avg_word_length": 0.0,
@@ -153,4 +154,3 @@ class FeatureExtractor:
             "adj_ratio": 0.0,
             "adv_ratio": 0.0,
         }
-        return features

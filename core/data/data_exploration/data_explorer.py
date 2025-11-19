@@ -1,12 +1,19 @@
+import os
+
+from matplotlib import pyplot as plt
+
 from core.data.data_exploration.grid_display_strategy import GridDisplayStrategy
 from core.data.data_exploration.plot_builder import PlotBuilder
+from core.data.data_exploration.save_to_file_display_strategy import (
+    SaveToFileDisplayStrategy,
+)
 from core.data.data_exploration.sequential_display_strategy import (
     SequentialDisplayStrategy,
 )
 
 
 class DataExplorer:
-    """Main class for data exploration with flexible plot display strategies."""
+    """Main class for data exploration and visualisation."""
 
     def __init__(self, df, feature_columns, display_mode: str = "grid"):
         """
@@ -21,7 +28,7 @@ class DataExplorer:
         self.feature_columns = feature_columns
         self.plot_builder = PlotBuilder(df, feature_columns)
         self._set_display_strategy(display_mode)
-        print(f"Display_strategy = {self._display_strategy}")
+        print(f"Display_strategy = {self._display_strategy.__class__.__name__}")
 
     def _set_display_strategy(self, mode: str):
         """Set the display strategy based on mode."""
@@ -29,8 +36,10 @@ class DataExplorer:
             self._display_strategy = GridDisplayStrategy()
         elif mode == "sequential":
             self._display_strategy = SequentialDisplayStrategy()
+        elif mode == "save":
+            self._display_strategy = SaveToFileDisplayStrategy()
         else:
-            raise ValueError("Mode must be 'grid' or 'sequential'")
+            raise ValueError("Mode must be 'grid', 'sequential', or 'save'")
 
     @property
     def display_mode(self) -> str:
@@ -39,6 +48,8 @@ class DataExplorer:
             return "grid"
         elif isinstance(self._display_strategy, SequentialDisplayStrategy):
             return "sequential"
+        elif isinstance(self._display_strategy, SaveToFileDisplayStrategy):
+            return "save"
         else:
             return "unknown"
 
@@ -52,11 +63,21 @@ class DataExplorer:
         print(self.df[self.feature_columns].iloc[:n].to_string())
 
     def _multi_feature_plot(
-        self, plot_func, title: str, columns_per_row: int = 4, **kwargs
+        self,
+        plot_func,
+        title: str,
+        folder_name: str,
+        columns_per_row: int = 4,
+        **kwargs,
     ):
         """Generic method for creating multiple feature plots."""
         self._display_strategy.display_plots(
-            self.feature_columns, plot_func, title, columns_per_row, **kwargs
+            self.feature_columns,
+            plot_func,
+            title,
+            columns_per_row,
+            folder_name=folder_name,
+            **kwargs,
         )
 
     def plot_feature_histograms(self, columns_per_row=4):
@@ -64,14 +85,16 @@ class DataExplorer:
         self._multi_feature_plot(
             self.plot_builder.create_histogram,
             "Histograms",
+            "histograms",
             columns_per_row,
         )
 
     def plot_log_histograms(self, columns_per_row=4):
-        """Plot histograms with log-scaled y-axis."""
+        """Plot histograms with log-scaled y-axis for all features."""
         self._multi_feature_plot(
             self.plot_builder.create_log_histogram,
             "Log-Scaled Histograms",
+            "log-histograms",
             columns_per_row,
         )
 
@@ -79,7 +102,8 @@ class DataExplorer:
         """Plot boxplots for all features."""
         self._multi_feature_plot(
             self.plot_builder.create_boxplot,
-            "Boxplots of Stylometric Features",
+            "Boxplots",
+            "boxplots",
             columns_per_row,
         )
 
@@ -90,7 +114,16 @@ class DataExplorer:
         Args:
             method: The method to be used. Accepts 'pearson' and 'spearman'
         """
-        self.plot_builder.create_correlation_heatmap(method)
+        fig = self.plot_builder.create_correlation_heatmap(method)
+
+        if isinstance(self._display_strategy, SaveToFileDisplayStrategy):
+            base_dir = self._display_strategy.output_dir
+            heatmap_dir = os.path.join(base_dir, "heatmaps")
+            os.makedirs(heatmap_dir, exist_ok=True)
+            fig.savefig(os.path.join(heatmap_dir, f"{method}_correlation.png"))
+            plt.close(fig)
+        else:
+            plt.show()
 
     def print_feature_extremes(self, top_n: int = 5):
         """Print out top-N and bottom-N rows per feature with value, author, ID and body preview."""

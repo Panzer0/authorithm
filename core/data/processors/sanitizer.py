@@ -1,5 +1,5 @@
 import re
-from typing import Tuple
+from typing import Tuple, List, Dict, Any
 
 
 class Sanitizer:
@@ -11,88 +11,112 @@ class Sanitizer:
 
     def __init__(self, strip_raw_links: bool = True):
         self.strip_raw_links = strip_raw_links
-        self._compiled = self._compile_patterns()
+        self._patterns = self._compile_patterns()
 
-    def _compile_patterns(self):
+    def _compile_patterns(self) -> Dict[str, Any]:
         return {
             "raw_links": re.compile(r"https?://[^\s)\]]+"),
             "horizontal_rules": re.compile(r"^\s*[*_\-]{3,}\s*$", re.MULTILINE),
             "markdown_patterns": [
-                re.compile(r"\[([^]]*)]\([^)]*\)"),  # markdown link
-                re.compile(r"```([\s\S]*?)```"),  # multiline code block
-                re.compile(r"\*\*(.*?)\*\*"),  # bold
-                re.compile(r"\*(.*?)\*"),  # italic
-                re.compile(r"__(.*?)__"),  # underline
-                re.compile(r"~~(.*?)~~"),  # strikethrough
-                re.compile(r"`(.*?)`"),  # inline code
-                re.compile(r">!(.*?)!<"),  # spoiler
-                re.compile(r"^> ?(.*)", re.MULTILINE),  # blockquote
+                re.compile(r"\[([^]]*)]\([^)]*\)"),  # Hyperlink
+                re.compile(r"```([\s\S]*?)```"),  # Code block
+                re.compile(r"\*\*(.*?)\*\*"),  # Bold
+                re.compile(r"\*(.*?)\*"),  # Italic
+                re.compile(r"__(.*?)__"),  # Underline
+                re.compile(r"~~(.*?)~~"),  # Strikethrough
+                re.compile(r"`(.*?)`"),  # Inline code
+                re.compile(r">!(.*?)!<"),  # Spoiler
+                re.compile(r"^> ?(.*)", re.MULTILINE),  # Blockquote
             ],
         }
 
-    def _process_match(
-        self, match: re.Match, offset: int
-    ) -> Tuple[str, int, int]:
-        """Cleans a single match: counts formatting, recurses, returns cleaned inner text and span."""
-        start, end = match.span(1)
-        global_start = offset + start
-        global_end = offset + end
-
-        if not any(
-            i in self.counted_spans for i in range(global_start, global_end)
-        ):
-            self.formatted_char_count += end - start
-            self.counted_spans.update(range(global_start, global_end))
-
-        cleaned_inner = self._parse_markdown(match.group(1), offset + start)
-        return cleaned_inner, match.start(), match.end()
-
-    def _apply_pattern(
-        self, text: str, pattern: re.Pattern, offset: int
-    ) -> str:
-        """Applies a single markdown pattern recursively and returns cleaned text."""
+    def _apply_removal(
+        self, text: str, mask: List[bool], pattern: re.Pattern
+    ) -> Tuple[str, List[bool]]:
         matches = list(pattern.finditer(text))
         if not matches:
-            return text
+            return text, mask
 
-        new_text = []
-        last_index = 0
+        new_text_parts = []
+        new_mask_parts = []
+        last_idx = 0
 
         for match in matches:
-            cleaned_inner, match_start, match_end = self._process_match(
-                match, offset
-            )
-            new_text.append(text[last_index:match_start])
-            new_text.append(cleaned_inner)
-            last_index = match_end
+            start, end = match.span()
+            new_text_parts.append(text[last_idx:start])
+            new_mask_parts.append(mask[last_idx:start])
+            last_idx = end
 
-        new_text.append(text[last_index:])
-        return "".join(new_text)
+        new_text_parts.append(text[last_idx:])
+        new_mask_parts.append(mask[last_idx:])
 
-    def _parse_markdown(self, text: str, offset: int = 0) -> str:
-        for pattern in self._compiled["markdown_patterns"]:
-            text = self._apply_pattern(text, pattern, offset)
-        return text
+        return "".join(new_text_parts), [
+            m for sub in new_mask_parts for m in sub
+        ]
+
+    def _apply_formatting(
+        self, text: str, mask: List[bool], pattern: re.Pattern
+    ) -> Tuple[str, List[bool]]:
+        matches = list(pattern.finditer(text))
+        if not matches:
+            return text, mask
+
+        new_text_parts = []
+        new_mask_parts = []
+        last_idx = 0
+
+        for match in matches:
+            start, end = match.span()
+            new_text_parts.append(text[last_idx:start])
+            new_mask_parts.append(mask[last_idx:start])
+
+            if match.lastindex and match.lastindex >= 1:
+                g_start, g_end = match.span(1)
+                len_inner = g_end - g_start
+                new_text_parts.append(match.group(1))
+                new_mask_parts.append([True] * len_inner)
+
+            last_idx = end
+
+        new_text_parts.append(text[last_idx:])
+        new_mask_parts.append(mask[last_idx:])
+
+        return "".join(new_text_parts), [
+            m for sub in new_mask_parts for m in sub
+        ]
 
     def sanitize(self, comment: str) -> Tuple[str, float]:
-        self.cleaned_comment = comment
-        self.formatted_char_count = 0
-        self.counted_spans = set()
+        if not comment:
+            return "", 0.0
+
+        current_text = comment
+        current_mask = [False] * len(comment)
 
         if self.strip_raw_links:
-            self.cleaned_comment = self._compiled["raw_links"].sub(
-                "", self.cleaned_comment
+            current_text, current_mask = self._apply_removal(
+                current_text, current_mask, self._patterns["raw_links"]
             )
 
-        self.cleaned_comment = self._parse_markdown(self.cleaned_comment)
+        for pattern in self._patterns["markdown_patterns"]:
+            current_text, current_mask = self._apply_formatting(
+                current_text, current_mask, pattern
+            )
 
-        self.cleaned_comment = self._compiled["horizontal_rules"].sub(
-            "", self.cleaned_comment
+        current_text, current_mask = self._apply_removal(
+            current_text, current_mask, self._patterns["horizontal_rules"]
         )
 
-        visible_len = len(self.cleaned_comment.strip())
-        markdown_ratio = (
-            self.formatted_char_count / visible_len if visible_len > 0 else 0.0
-        )
+        stripped_text = current_text.strip()
+        if not stripped_text:
+            return "", 0.0
 
-        return self.cleaned_comment.strip(), markdown_ratio
+        leading_spaces = len(current_text) - len(current_text.lstrip())
+        final_mask = current_mask[
+            leading_spaces : leading_spaces + len(stripped_text)
+        ]
+
+        formatted_count = sum(final_mask)
+        visible_len = len(stripped_text)
+
+        ratio = formatted_count / visible_len if visible_len > 0 else 0.0
+        return stripped_text, min(ratio, 1.0)
