@@ -74,7 +74,9 @@ class FeatureExtractor:
         total_words = metrics.word_count
 
         type_token_ratio = (
-            unique_words / math.sqrt(total_words) if total_words > 0 else 0.0
+            math.log(unique_words) / math.log(total_words)
+            if total_words > 1
+            else 1.0
         )
 
         return {
