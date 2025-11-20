@@ -11,7 +11,8 @@ from core.network.classification.trainers.author_model_trainer import (
 )
 
 FEATURES = [
-    "char_count",
+    # "char_count",
+    "word_count",
     "avg_word_length",
     "punct_ratio",
     "uppercase_ratio",
