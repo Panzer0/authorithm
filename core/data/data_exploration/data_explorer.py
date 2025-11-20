@@ -71,13 +71,17 @@ class DataExplorer:
         **kwargs,
     ):
         """Generic method for creating multiple feature plots."""
+        strategy_kwargs = kwargs.copy()
+
+        if self.display_mode == "save":
+            strategy_kwargs['folder_name'] = folder_name
+
         self._display_strategy.display_plots(
             self.feature_columns,
             plot_func,
             title,
             columns_per_row,
-            folder_name=folder_name,
-            **kwargs,
+            **strategy_kwargs,
         )
 
     def plot_feature_histograms(self, columns_per_row=4):
