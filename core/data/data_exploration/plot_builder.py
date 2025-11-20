@@ -56,6 +56,9 @@ class PlotBuilder:
             square=True,
             linewidths=0.5,
             cbar_kws={"shrink": 0.75},
+            center=0,
+            vmin=-1,
+            vmax=1,
         )
         plt.title(
             f"{method.title()} Correlation Heatmap (Lower Triangle)",
