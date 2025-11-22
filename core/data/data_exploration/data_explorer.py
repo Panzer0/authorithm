@@ -2,7 +2,9 @@ import os
 
 from matplotlib import pyplot as plt
 
-from core.data.data_exploration.display_strategies.grid_display_strategy import GridDisplayStrategy
+from core.data.data_exploration.display_strategies.grid_display_strategy import (
+    GridDisplayStrategy,
+)
 from core.data.data_exploration.plot_builder import PlotBuilder
 from core.data.data_exploration.display_strategies.save_to_file_display_strategy import (
     SaveToFileDisplayStrategy,
@@ -74,7 +76,7 @@ class DataExplorer:
         strategy_kwargs = kwargs.copy()
 
         if self.display_mode == "save":
-            strategy_kwargs['folder_name'] = folder_name
+            strategy_kwargs["folder_name"] = folder_name
 
         self._display_strategy.display_plots(
             self.feature_columns,
