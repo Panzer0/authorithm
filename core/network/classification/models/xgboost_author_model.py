@@ -76,19 +76,17 @@ class XGBoostAuthorModel(AuthorModel):
         results = {}
         n_classes = len(self.label_encoder.classes_)
 
-        precision, recall, f1, support = precision_recall_fscore_support(
-            y_true, y_pred, average=None, labels=np.arange(n_classes)
+        precision, recall, f1, _ = precision_recall_fscore_support(
+            y_true,
+            y_pred,
+            average="macro",
+            labels=np.arange(n_classes),
+            zero_division=0
         )
-        results["precision_macro"] = round(np.mean(precision), 4)
-        results["recall_macro"] = round(np.mean(recall), 4)
-        results["f1_macro"] = round(np.mean(f1), 4)
-        results["precision_weighted"] = round(
-            np.average(precision, weights=support), 4
-        )
-        results["recall_weighted"] = round(
-            np.average(recall, weights=support), 4
-        )
-        results["f1_weighted"] = round(np.average(f1, weights=support), 4)
+
+        results["precision"] = round(precision, 4)
+        results["recall"] = round(recall, 4)
+        results["f1"] = round(f1, 4)
 
         # 3. Top-k accuracy
         for k in top_k:
