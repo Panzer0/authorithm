@@ -11,7 +11,8 @@ from core.network.classification.trainers.author_model_trainer import (
 )
 
 FEATURES = [
-    "char_count",
+    # "char_count",
+    "word_count",
     "avg_word_length",
     "punct_ratio",
     "uppercase_ratio",
@@ -56,23 +57,28 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Train and evaluate authorship attribution models."
     )
+
     parser.add_argument(
         "--model", type=str, choices=MODEL_REGISTRY.keys(), default="xgboost"
     )
+
     parser.add_argument(
         "--explore",
         action="store_true",
         default=False,
         help="Run exploratory data analysis",
     )
+
     parser.add_argument(
         "--display_mode",
-        default=None,
+        default="grid",
+        choices=["grid", "sequential", "save"],
         help=(
             "How results should be displayed:\n"
             "  sequential - show items one after another\n"
             "  grid       - show items in a grid layout\n"
-            "(default: sequential)"
+            "  save       - save plots to ./graphs/[timestamp]/ folder\n"
+            "(default: grid)"
         ),
     )
     args = parser.parse_args()
