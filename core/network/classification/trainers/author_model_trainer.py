@@ -1,32 +1,27 @@
 from core.data.data_exploration.data_explorer import DataExplorer
-from core.network.classification.base.data_handler import DataHandlerMixin
 
 
-class AuthorModelTrainer(DataHandlerMixin):
-    def __init__(self, model, feature_columns, path, sample_count=1000):
+class AuthorModelTrainer:
+    def __init__(self, model, data_loader):
         self.model = model
-        self.feature_columns = feature_columns
-        self.path = path
-        self.sample_count = sample_count
-
-    def prepare_data(self):
-        (X_train, X_test, y_train, y_test), df = self.load_data(
-            path=self.path,
-            sample_count=self.sample_count,
-            feature_columns=self.feature_columns,
-        )
-        return X_train, X_test, y_train, y_test, df
+        self.data_loader = data_loader
 
     def run(self, run_exploration=False, display_mode=None):
-        X_train, X_test, y_train, y_test, df = self.prepare_data()
+        (
+            X_train,
+            X_test,
+            y_train,
+            y_test,
+        ) = self.data_loader.get_train_test_split()
 
         if run_exploration:
             print("Running data exploration...")
-            explorer = (
-                DataExplorer(df, self.feature_columns, display_mode)
-                if display_mode
-                else DataExplorer(df, self.feature_columns)
-            )
+            df = self.data_loader.full_dataframe
+            explorer = DataExplorer(df, self.data_loader.feature_columns)
+
+            if display_mode:
+                explorer.display_mode = display_mode
+
             explorer.run_full_exploration()
 
         print(f"Training on {len(X_train)} samples...")
