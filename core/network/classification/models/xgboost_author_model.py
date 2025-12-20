@@ -81,7 +81,7 @@ class XGBoostAuthorModel(AuthorModel):
             y_pred,
             average="macro",
             labels=np.arange(n_classes),
-            zero_division=0
+            zero_division=0,
         )
 
         results["precision"] = round(precision, 4)
