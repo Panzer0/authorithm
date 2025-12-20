@@ -29,15 +29,6 @@ class PlotBuilder:
         """Create a boxplot on the given axis."""
         sns.boxplot(x=self.df[col], ax=ax, fliersize=2)
 
-    def create_standard_histograms(self, bins: int = 30):
-        """Create standard histograms using pandas built-in."""
-        self.df[self.feature_columns].hist(
-            figsize=(16, 12), bins=bins, edgecolor="black"
-        )
-        plt.suptitle("Stylometric Feature Distributions", fontsize=18)
-        plt.tight_layout()
-        plt.show()
-
     def create_correlation_heatmap(self, method: str = "pearson"):
         """Create a correlation heatmap and return the figure."""
         if method not in ["pearson", "spearman"]:
