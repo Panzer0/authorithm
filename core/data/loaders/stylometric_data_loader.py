@@ -1,6 +1,7 @@
 import pandas as pd
-from typing import List, Dict, Tuple, Optional
 from sklearn.model_selection import train_test_split
+from typing import List, Dict, Tuple
+
 from core.data.preprocessing import balance_dataset, filter_by_feature
 
 

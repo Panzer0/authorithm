@@ -1,10 +1,9 @@
 import math
+import spacy
 import string
+import textstat
 from collections import Counter
 from typing import Dict, List
-
-import spacy
-import textstat
 
 from core.data.feature_extraction.text_metrics import TextMetrics
 

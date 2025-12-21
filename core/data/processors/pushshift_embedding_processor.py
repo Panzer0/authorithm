@@ -1,9 +1,10 @@
-import json
-from core.data.embedder import Embedder
-from tqdm import tqdm
-import zstandard as zstd
 import io
+import json
+import zstandard as zstd
+from tqdm import tqdm
+
 from core.config import UNCOMPRESSED_PATH_JINA, COMPRESSED_PATH
+from core.data.embedder import Embedder
 from core.data.processors.parquet_chunk_writer import ParquetChunkWriter
 
 
@@ -158,6 +159,4 @@ class PushshiftEmbeddingProcessor:
 
 if __name__ == "__main__":
     collector = PushshiftEmbeddingProcessor()
-    collector.zst_to_parquet(
-        COMPRESSED_PATH, UNCOMPRESSED_PATH_JINA
-    )
+    collector.zst_to_parquet(COMPRESSED_PATH, UNCOMPRESSED_PATH_JINA)

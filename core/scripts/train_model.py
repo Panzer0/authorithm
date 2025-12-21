@@ -1,4 +1,5 @@
 import argparse
+
 from core.config import UNCOMPRESSED_PATH_STYLOMETRIC
 from core.data.loaders.stylometric_data_loader import StylometricDataLoader
 from core.network.classification.models.bayesian_author_model import (
@@ -10,7 +11,6 @@ from core.network.classification.models.xgboost_author_model import (
 from core.network.classification.trainers.author_model_trainer import (
     AuthorModelTrainer,
 )
-
 
 FEATURES = [
     # "char_count",

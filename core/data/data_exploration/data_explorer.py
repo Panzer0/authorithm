@@ -1,17 +1,16 @@
 import os
-
 from matplotlib import pyplot as plt
 
 from core.data.data_exploration.display_strategies.grid_display_strategy import (
     GridDisplayStrategy,
 )
-from core.data.data_exploration.plot_builder import PlotBuilder
 from core.data.data_exploration.display_strategies.save_to_file_display_strategy import (
     SaveToFileDisplayStrategy,
 )
 from core.data.data_exploration.display_strategies.sequential_display_strategy import (
     SequentialDisplayStrategy,
 )
+from core.data.data_exploration.plot_builder import PlotBuilder
 
 
 class DataExplorer:

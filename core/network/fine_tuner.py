@@ -1,6 +1,7 @@
 from sklearn.model_selection import train_test_split
-from core.data.dataset.reddit_dataset import RedditDataset
+
 from core.config import DATASET_PATH
+from core.data.dataset.reddit_dataset import RedditDataset
 
 
 class FineTuner:

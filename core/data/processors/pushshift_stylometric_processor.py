@@ -1,13 +1,12 @@
 import io
 import json
 import multiprocessing
-import traceback
-from datetime import datetime, timezone
-from typing import Optional
-
 import spacy
+import traceback
 import zstandard as zstd
+from datetime import datetime, timezone
 from tqdm import tqdm
+from typing import Optional
 
 from core.config import COMPRESSED_PATH, UNCOMPRESSED_PATH_STYLOMETRIC
 from core.data.feature_extraction.feature_extractor import FeatureExtractor

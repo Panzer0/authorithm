@@ -1,8 +1,7 @@
-from typing import Any
-
 import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
+from typing import Any
 
 
 class PlotBuilder:
