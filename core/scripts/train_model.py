@@ -99,7 +99,7 @@ if __name__ == "__main__":
             "How exploration plots should be displayed:\n"
             "  grid       - grid layout (default)\n"
             "  sequential - show one by one\n"
-            "  save       - save to ./graphs/[timestamp]/ folder\n"
+            "  save       - save to ./plots/[timestamp]/ folder\n"
             "(default: grid)"
         ),
     )
