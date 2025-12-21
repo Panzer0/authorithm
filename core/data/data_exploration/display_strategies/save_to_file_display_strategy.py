@@ -1,18 +1,21 @@
 import os
 from datetime import datetime
-from typing import List, Callable
 from matplotlib import pyplot as plt
-from core.data.data_exploration.display_strategies.plot_display_strategy import PlotDisplayStrategy
+from typing import List, Callable
+
+from core.data.data_exploration.display_strategies.plot_display_strategy import (
+    PlotDisplayStrategy,
+)
 
 
 class SaveToFileDisplayStrategy(PlotDisplayStrategy):
     """Save plots to files."""
 
-    def __init__(self, base_dir: str = "./graphs"):
+    def __init__(self, base_dir: str = "./plots"):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.output_dir = os.path.join(base_dir, timestamp)
         os.makedirs(self.output_dir, exist_ok=True)
-        print(f"📂 Saving graphs to: {self.output_dir}")
+        print(f"📂 Saving plots to: {self.output_dir}")
 
     def display_plots(
         self,

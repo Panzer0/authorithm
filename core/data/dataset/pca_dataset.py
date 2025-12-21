@@ -1,6 +1,6 @@
 import numpy as np
-from torch.utils.data import Dataset
 import pandas as pd
+from torch.utils.data import Dataset
 
 
 class PCADataset(Dataset):

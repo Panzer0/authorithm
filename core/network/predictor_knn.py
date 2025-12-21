@@ -1,11 +1,10 @@
 import numpy as np
 from sklearn.metrics import confusion_matrix
-
-from core.data.dataset.pca_dataset import PCADataset
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 
 from core.config import DATASET_PCA_PATH
+from core.data.dataset.pca_dataset import PCADataset
 
 
 class PredictorKNN:

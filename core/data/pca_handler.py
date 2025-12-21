@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
-from tqdm import tqdm
 from sklearn.decomposition import IncrementalPCA
+from tqdm import tqdm
 
 from core.config import DATASET_PATH, DATASET_PCA_PATH
 from core.data.preprocessing import balance_dataset

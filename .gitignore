@@ -242,5 +242,5 @@ datasets/
 /datasets
 /raw_data/
 
-# The authorithm-created graphs
-graphs/
+# The authorithm-created plots
+plots/

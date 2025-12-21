@@ -1,8 +1,9 @@
-import praw, prawcore
 import pandas as pd
-from core.data.embedder import Embedder
+import praw
+import prawcore
 
 from core.config import DATASET_PATH, SUBREDDIT_NAME
+from core.data.embedder import Embedder
 
 # Default site name for praw's Reddit object
 SITE_NAME = "Authorithm"

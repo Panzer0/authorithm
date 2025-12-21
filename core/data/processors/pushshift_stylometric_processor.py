@@ -1,13 +1,12 @@
 import io
 import json
 import multiprocessing
-import traceback
-from datetime import datetime, timezone
-from typing import Optional
-
 import spacy
+import traceback
 import zstandard as zstd
+from datetime import datetime, timezone
 from tqdm import tqdm
+from typing import Optional
 
 from core.config import COMPRESSED_PATH, UNCOMPRESSED_PATH_STYLOMETRIC
 from core.data.feature_extraction.feature_extractor import FeatureExtractor
@@ -86,7 +85,7 @@ class PushshiftStylometricProcessor:
     def __init__(self) -> None:
         pass
 
-    def zst_to_parquet_with_embeddings(
+    def zst_to_parquet(
         self,
         zst_file_path: str,
         parquet_file_path: str,
@@ -165,7 +164,7 @@ class PushshiftStylometricProcessor:
 
 if __name__ == "__main__":
     collector = PushshiftStylometricProcessor()
-    collector.zst_to_parquet_with_embeddings(
+    collector.zst_to_parquet(
         COMPRESSED_PATH,
         UNCOMPRESSED_PATH_STYLOMETRIC,
         write_chunksize=50000,

@@ -1,8 +1,9 @@
+from matplotlib import pyplot as plt
 from typing import List, Callable
 
-from matplotlib import pyplot as plt
-
-from core.data.data_exploration.display_strategies.plot_display_strategy import PlotDisplayStrategy
+from core.data.data_exploration.display_strategies.plot_display_strategy import (
+    PlotDisplayStrategy,
+)
 
 
 class SequentialDisplayStrategy(PlotDisplayStrategy):

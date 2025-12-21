@@ -1,8 +1,8 @@
+import numpy as np
 import pandas as pd
+import pyarrow.parquet as pq
 import torch
 from torch.utils.data import IterableDataset, DataLoader
-import pyarrow.parquet as pq
-import numpy as np
 
 
 class LazyParquetDataset(IterableDataset):
