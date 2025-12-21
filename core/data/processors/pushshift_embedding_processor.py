@@ -21,7 +21,7 @@ class PushshiftEmbeddingProcessor:
     def __init__(self) -> None:
         self.embedder = Embedder()
 
-    def zst_to_parquet_with_embeddings(
+    def zst_to_parquet(
         self,
         zst_file_path: str,
         parquet_file_path: str,
@@ -158,6 +158,6 @@ class PushshiftEmbeddingProcessor:
 
 if __name__ == "__main__":
     collector = PushshiftEmbeddingProcessor()
-    collector.zst_to_parquet_with_embeddings(
+    collector.zst_to_parquet(
         COMPRESSED_PATH, UNCOMPRESSED_PATH_JINA
     )

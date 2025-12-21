@@ -86,7 +86,7 @@ class PushshiftStylometricProcessor:
     def __init__(self) -> None:
         pass
 
-    def zst_to_parquet_with_embeddings(
+    def zst_to_parquet(
         self,
         zst_file_path: str,
         parquet_file_path: str,
@@ -165,7 +165,7 @@ class PushshiftStylometricProcessor:
 
 if __name__ == "__main__":
     collector = PushshiftStylometricProcessor()
-    collector.zst_to_parquet_with_embeddings(
+    collector.zst_to_parquet(
         COMPRESSED_PATH,
         UNCOMPRESSED_PATH_STYLOMETRIC,
         write_chunksize=50000,
