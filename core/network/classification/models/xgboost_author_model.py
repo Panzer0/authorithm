@@ -88,7 +88,6 @@ class XGBoostAuthorModel(AuthorModel):
         results["recall"] = round(recall, 4)
         results["f1"] = round(f1, 4)
 
-        # 3. Top-k accuracy
         for k in top_k:
             if k > n_classes:
                 results[f"top_{k}_accuracy"] = 1.0
