@@ -21,7 +21,12 @@ class XGBoostAuthorModel(AuthorModel):
         self.xgb_params = xgb_params
 
     def fit(self, X, y):
-        """Fit the model to training data."""
+        """Fit the model to training data.
+
+        Args:
+            X: Feature matrix
+            y: Target vector
+        """
         y_encoded = self.label_encoder.fit_transform(y)
 
         default_params = {
