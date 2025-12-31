@@ -32,6 +32,7 @@ class XGBoostAuthorModel(AuthorModel):
         default_params = {
             "objective": "multi:softprob",
             "eval_metric": "mlogloss",
+            "device": "cuda",
             "tree_method": "hist",
             "n_jobs": -1,
             "random_state": 42,
