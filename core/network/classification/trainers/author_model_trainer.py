@@ -27,6 +27,8 @@ class AuthorModelTrainer:
 
             explorer.run_full_exploration()
 
+        print(f"Training on {len(X_train)} samples...")
+
         start_time = (
             time.perf_counter()
         )
