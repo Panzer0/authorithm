@@ -1,3 +1,6 @@
+import time
+from datetime import timedelta
+
 from core.data.data_exploration.data_explorer import DataExplorer
 
 
@@ -24,8 +27,21 @@ class AuthorModelTrainer:
 
             explorer.run_full_exploration()
 
-        print(f"Training on {len(X_train)} samples...")
+        start_time = (
+            time.perf_counter()
+        )
+
         self.model.fit(X_train, y_train)
+
+        end_time = time.perf_counter()
+        elapsed_seconds = end_time - start_time
+
+        formatted_time = str(timedelta(seconds=elapsed_seconds))
+
+        print(
+            f"Training completed in: {formatted_time} ({elapsed_seconds:.2f}s)"
+        )
+        print("-" * 50)
 
         print("Evaluating...")
         results = self.model.evaluate(X_test, y_test)
