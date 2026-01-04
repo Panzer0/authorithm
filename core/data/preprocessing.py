@@ -124,6 +124,10 @@ def prune_above_user_count(df: pd.DataFrame, limit: int) -> pd.DataFrame:
     """
     return (
         df.groupby("author")
-        .apply(lambda x: x.sample(n=min(len(x), limit), random_state=42))
-        .reset_index(level=0, drop=True)
+        .apply(
+            lambda x: x.sample(n=min(len(x), limit), random_state=42),
+            include_groups=False
+        )
+        .reset_index(level="author")
+        .reset_index(drop=True)
     )

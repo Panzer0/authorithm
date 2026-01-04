@@ -21,12 +21,18 @@ class XGBoostAuthorModel(AuthorModel):
         self.xgb_params = xgb_params
 
     def fit(self, X, y):
-        """Fit the model to training data."""
+        """Fit the model to training data.
+
+        Args:
+            X: Feature matrix
+            y: Target vector
+        """
         y_encoded = self.label_encoder.fit_transform(y)
 
         default_params = {
             "objective": "multi:softprob",
             "eval_metric": "mlogloss",
+            "device": "cuda",
             "tree_method": "hist",
             "n_jobs": -1,
             "random_state": 42,
@@ -88,7 +94,6 @@ class XGBoostAuthorModel(AuthorModel):
         results["recall"] = round(recall, 4)
         results["f1"] = round(f1, 4)
 
-        # 3. Top-k accuracy
         for k in top_k:
             if k > n_classes:
                 results[f"top_{k}_accuracy"] = 1.0
